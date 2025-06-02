@@ -316,13 +316,13 @@ function showCredits() {
         <div style="text-align: center; line-height: 1.8; color: rgba(255, 255, 255, 0.9);">
             <div style="margin-bottom: 2rem;">
                 <h3 style="color: rgba(100, 200, 255, 0.9); margin-bottom: 1rem; font-size: 1.8rem; text-shadow: 0 0 10px rgba(100, 200, 255, 0.4);">🎮 Game Development</h3>
-                <p style="font-size: 1.2rem;"><strong>Created by:</strong> Your Development Team</p>
-                <p style="font-size: 1.1rem;">Based on Figma Design</p>
+                <p style="font-size: 1.2rem;"><strong>Created by:</strong> Haoran Ni and Xiaoyuan Xu</p>
+                <p style="font-size: 1.1rem;">The game loop is mostly designed and implemented by Xiaoyuan Xu</p>
             </div>
             
             <div style="margin-bottom: 2rem;">
                 <h3 style="color: rgba(100, 200, 255, 0.9); margin-bottom: 1rem; font-size: 1.8rem; text-shadow: 0 0 10px rgba(100, 200, 255, 0.4);">🎨 Art & Design</h3>
-                <p style="font-size: 1.1rem;">Character Art & UI Design</p>
+                <p style="font-size: 1.1rem;">Character Art & UI Design: Haoran Ni, his ai partners and Honkai StarRail IP</p>
                 <p style="font-size: 1.1rem;">Background Illustrations</p>
             </div>
             
