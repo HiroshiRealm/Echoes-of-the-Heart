@@ -27,9 +27,7 @@
             width: 100%;
             height: 100%;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            flex-direction: row;
             z-index: 1000;
             opacity: 1;
             transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -41,71 +39,69 @@
             pointer-events: none;
         }
 
-        .intro-image {
-            width: 400px;
-            height: 300px;
-            background: linear-gradient(135deg, #4a5568, #718096);
-            border-radius: 15px;
-            margin-bottom: 50px;
-            opacity: 0;
-            transform: translateY(30px);
-            animation: fadeInUp 2s ease-out 0.5s forwards;
+        .intro-left {
+            width: 75%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             position: relative;
+        }
+
+        .intro-image {
+            width: 90%;
+            height: 90%;
+            background-image: url('./assets/images/intro-March7th.jpg');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            border-radius: 15px;
+            opacity: 0;
+            transform: translateX(-50px) scale(0.9);
+            animation: slideInLeft 2s ease-out 0.5s forwards;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
-        .intro-image::before {
-            content: '占位符图片';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #e2e8f0;
-            font-size: 18px;
-            text-align: center;
-        }
-
-        .intro-image::after {
-            content: '替换为实际图片：将此元素的 background 属性改为 background-image: url("your-image.jpg");';
-            position: absolute;
-            bottom: -40px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #a0aec0;
-            font-size: 12px;
-            text-align: center;
-            width: 300px;
-            opacity: 0.7;
+        .intro-right {
+            width: 25%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 2rem;
+            position: relative;
         }
 
         .intro-text {
-            max-width: 600px;
-            text-align: center;
-            line-height: 2;
-            font-size: 18px;
+            width: 100%;
+            text-align: left;
+            line-height: 1.8;
+            font-size: 16px;
             color: #e2e8f0;
         }
 
         .text-line {
             opacity: 0;
-            transform: translateY(20px);
-            margin-bottom: 8px;
+            transform: translateX(30px);
+            margin-bottom: 12px;
             animation-fill-mode: forwards;
         }
 
         .continue-button {
-            margin-top: 40px;
-            padding: 15px 40px;
+            margin-top: 30px;
+            padding: 12px 30px;
             background: linear-gradient(135deg, #1a365d, #2d5a87);
             border: 2px solid rgba(100, 200, 255, 0.3);
             border-radius: 25px;
             color: #e2e8f0;
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer;
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateX(30px);
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
+            align-self: flex-start;
         }
 
         .continue-button:hover {
@@ -115,7 +111,7 @@
         }
 
         .continue-button.show {
-            animation: fadeInUp 1s ease-out forwards;
+            animation: slideInRight 1s ease-out forwards;
         }
 
         /* ===== WebGL粒子背景 ===== */
@@ -244,6 +240,20 @@
             }
         }
 
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+        }
+
+        @keyframes slideInRight {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
         @keyframes slideInMessage {
             from {
                 opacity: 0;
@@ -258,20 +268,53 @@
         @keyframes textReveal {
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateX(0);
             }
         }
 
         /* ===== 响应式设计 ===== */
         @media (max-width: 768px) {
-            .intro-image {
-                width: 300px;
-                height: 225px;
+            #intro-screen {
+                flex-direction: column;
+            }
+            
+            .intro-left {
+                width: 100%;
+                height: 60%;
+            }
+            
+            .intro-right {
+                width: 100%;
+                height: 40%;
+                padding: 1rem;
+                justify-content: flex-start;
+                align-items: center;
+                text-align: center;
             }
             
             .intro-text {
-                font-size: 16px;
-                max-width: 90%;
+                text-align: center;
+                font-size: 14px;
+            }
+            
+            .text-line {
+                transform: translateY(20px);
+            }
+            
+            .continue-button {
+                transform: translateY(20px);
+                align-self: center;
+            }
+            
+            @keyframes textReveal {
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            .continue-button.show {
+                animation: fadeInUp 1s ease-out forwards;
             }
             
             .dialogue-container {
@@ -288,17 +331,21 @@
 <body>
     <!-- 开场介绍界面 -->
     <div id="intro-screen">
-        <div class="intro-image"></div>
-        <div class="intro-text">
-            <div class="text-line">三月七发现自己漂浮在一片广阔而混乱的意识空间中，</div>
-            <div class="text-line">她的记忆如同破碎的镜子，</div>
-            <div class="text-line">散落在未知的角落，</div>
-            <div class="text-line">等待着被重新拾起与理解……</div>
-            <div class="text-line">在这个梦幻般的空间里，</div>
-            <div class="text-line">时间失去了意义，现实与幻想交织，</div>
-            <div class="text-line">她必须通过对话来寻找真相。</div>
+        <div class="intro-left">
+            <div class="intro-image"></div>
         </div>
-        <button class="continue-button" id="continue-btn">进入回忆</button>
+        <div class="intro-right">
+            <div class="intro-text">
+                <div class="text-line">三月七发现自己漂浮在一片广阔而混乱的意识空间中，</div>
+                <div class="text-line">她的记忆如同破碎的镜子，</div>
+                <div class="text-line">散落在未知的角落，</div>
+                <div class="text-line">等待着被重新拾起与理解……</div>
+                <div class="text-line">在这个梦幻般的空间里，</div>
+                <div class="text-line">时间失去了意义，现实与幻想交织，</div>
+                <div class="text-line">她必须通过对话来寻找真相。</div>
+            </div>
+            <button class="continue-button" id="continue-btn">进入回忆</button>
+        </div>
     </div>
 
     <!-- WebGL粒子背景 -->
