@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echoes of The Heart</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="game-container">
+        <div class="background-overlay"></div>
+        
+        <div class="character-container">
+            <img src="assets/images/character.png" alt="Game Character" class="character-image">
+        </div>
+        
+        <div class="content-container">
+            <h1 class="game-title">
+                Echoes<br>
+                of The<br>
+                Heart
+            </h1>
+            
+            <div class="menu-buttons">
+                <button class="menu-btn primary" onclick="startJourney()">
+                    <span>START JOURNEY</span>
+                </button>
+                
+                <button class="menu-btn" onclick="openOptions()">
+                    <span>OPTIONS</span>
+                </button>
+                
+                <button class="menu-btn" onclick="showCredits()">
+                    <span>CREDITS</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p>Loading your journey...</p>
+    </div>
+
+    <!-- Modal for options and credits -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
