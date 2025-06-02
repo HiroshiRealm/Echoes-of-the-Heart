@@ -306,20 +306,42 @@ body {
 .modal-content {
     background: linear-gradient(135deg, rgba(20, 30, 60, 0.95) 0%, rgba(30, 50, 90, 0.95) 100%);
     border: 2px solid rgba(100, 200, 255, 0.6);
-    margin: 10% auto;
-    padding: 3rem;
+    margin: 5vh auto;
+    padding: 2rem;
     border-radius: 15px;
     width: 90%;
-    max-width: 600px;
+    max-width: 700px;
+    max-height: 85vh;
     position: relative;
     box-shadow: 0 20px 60px rgba(0,0,0,0.8);
     animation: modalSlideIn 0.3s ease-out;
     color: #ffffff;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 @keyframes modalSlideIn {
     from { transform: translateY(-50px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
+}
+
+/* Custom scrollbar for modal */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: rgba(20, 30, 60, 0.3);
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, rgba(100, 200, 255, 0.6), rgba(150, 220, 255, 0.8));
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, rgba(100, 200, 255, 0.8), rgba(150, 220, 255, 1));
 }
 
 .close {
@@ -388,6 +410,14 @@ body {
         font-size: 1.8rem;
         padding: 1.3rem 2.5rem;
     }
+    
+    /* Modal adjustments for tablets */
+    .modal-content {
+        margin: 3vh auto;
+        padding: 1.5rem;
+        max-height: 90vh;
+        width: 95%;
+    }
 }
 
 @media (max-width: 768px) {
@@ -422,6 +452,34 @@ body {
     .menu-btn {
         font-size: 1.6rem;
         padding: 1.1rem 2rem;
+    }
+    
+    /* Modal adjustments for mobile */
+    .modal-content {
+        margin: 2vh auto;
+        padding: 1rem;
+        max-height: 95vh;
+        width: 98%;
+        border-radius: 10px;
+    }
+    
+    .close {
+        font-size: 1.5rem;
+        top: 0.5rem;
+        right: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Extra small screens */
+    .modal-content {
+        margin: 1vh auto;
+        padding: 0.8rem;
+        max-height: 97vh;
+        width: 100%;
+        border-radius: 8px;
+        border-left: none;
+        border-right: none;
     }
 }
 

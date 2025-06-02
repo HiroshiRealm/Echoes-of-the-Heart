@@ -196,11 +196,11 @@ function openOptions() {
     const modalBody = document.getElementById('modal-body');
     
     modalBody.innerHTML = `
-        <h2 style="margin-bottom: 2rem; color: #ffffff; font-size: 2.5rem; text-shadow: 0 0 20px rgba(100, 200, 255, 0.6);">Game Options</h2>
+        <h2 style="margin-bottom: 1.5rem; color: #ffffff; font-size: clamp(1.8rem, 5vw, 2.5rem); text-shadow: 0 0 20px rgba(100, 200, 255, 0.6);">Game Options</h2>
         
-        <div style="display: grid; gap: 1.5rem;">
+        <div style="display: grid; gap: 1.2rem;">
             <div class="option-group">
-                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: rgba(100, 200, 255, 0.9);">Music Volume</label>
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: rgba(100, 200, 255, 0.9); font-size: clamp(0.9rem, 2.5vw, 1rem);">Music Volume</label>
                 <input type="range" min="0" max="100" value="${Math.round((backgroundMusic?.volume || 0.5) * 100)}" 
                        onchange="setMusicVolume(this.value)" 
                        style="
@@ -214,7 +214,7 @@ function openOptions() {
             </div>
             
             <div class="option-group">
-                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: rgba(100, 200, 255, 0.9);">Audio Volume</label>
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: rgba(100, 200, 255, 0.9); font-size: clamp(0.9rem, 2.5vw, 1rem);">Audio Volume</label>
                 <input type="range" min="0" max="100" value="75" style="
                     width: 100%; 
                     height: 8px; 
@@ -226,13 +226,13 @@ function openOptions() {
             </div>
             
             <div class="option-group">
-                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: rgba(100, 200, 255, 0.9);">Difficulty</label>
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: rgba(100, 200, 255, 0.9); font-size: clamp(0.9rem, 2.5vw, 1rem);">Difficulty</label>
                 <select style="
                     width: 100%; 
-                    padding: 0.8rem; 
+                    padding: clamp(0.6rem, 2vw, 0.8rem); 
                     border: 2px solid rgba(100, 200, 255, 0.6); 
                     border-radius: 8px; 
-                    font-size: 1.1rem;
+                    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
                     background: rgba(20, 30, 60, 0.8);
                     color: #ffffff;
                     outline: none;
@@ -245,7 +245,7 @@ function openOptions() {
             </div>
             
             <div class="option-group">
-                <label style="display: flex; align-items: center; font-weight: 600; color: rgba(100, 200, 255, 0.9); cursor: pointer;">
+                <label style="display: flex; align-items: center; font-weight: 600; color: rgba(100, 200, 255, 0.9); cursor: pointer; font-size: clamp(0.9rem, 2.5vw, 1rem);">
                     <input type="checkbox" checked style="
                         margin-right: 0.8rem; 
                         transform: scale(1.2);
@@ -256,7 +256,7 @@ function openOptions() {
             </div>
             
             <div class="option-group">
-                <label style="display: flex; align-items: center; font-weight: 600; color: rgba(100, 200, 255, 0.9); cursor: pointer;">
+                <label style="display: flex; align-items: center; font-weight: 600; color: rgba(100, 200, 255, 0.9); cursor: pointer; font-size: clamp(0.9rem, 2.5vw, 1rem);">
                     <input type="checkbox" ${isMusicPlaying ? 'checked' : ''} 
                            onchange="toggleAudio()" style="
                         margin-right: 0.8rem; 
@@ -271,15 +271,16 @@ function openOptions() {
                 background: linear-gradient(135deg, rgba(50, 100, 200, 0.8) 0%, rgba(70, 130, 230, 0.8) 100%);
                 border: 2px solid rgba(100, 200, 255, 0.8);
                 color: white;
-                padding: 1rem 2rem;
+                padding: clamp(0.8rem, 2.5vw, 1rem) clamp(1.5rem, 4vw, 2rem);
                 border-radius: 8px;
-                font-size: 1.2rem;
+                font-size: clamp(1rem, 3vw, 1.2rem);
                 font-weight: 600;
                 cursor: pointer;
                 margin-top: 1rem;
                 transition: all 0.3s ease;
                 text-shadow: 0 2px 4px rgba(0,0,0,0.3);
                 backdrop-filter: blur(10px);
+                width: 100%;
             " onmouseover="
                 this.style.transform='translateY(-2px)';
                 this.style.boxShadow='0 8px 25px rgba(30, 60, 150, 0.6), 0 0 20px rgba(100, 200, 255, 0.4)';
@@ -311,36 +312,36 @@ function showCredits() {
     const modalBody = document.getElementById('modal-body');
     
     modalBody.innerHTML = `
-        <h2 style="margin-bottom: 2rem; color: #ffffff; font-size: 2.5rem; text-align: center; text-shadow: 0 0 20px rgba(100, 200, 255, 0.6);">Credits</h2>
+        <h2 style="margin-bottom: 1.5rem; color: #ffffff; font-size: clamp(1.8rem, 5vw, 2.5rem); text-align: center; text-shadow: 0 0 20px rgba(100, 200, 255, 0.6);">Credits</h2>
         
-        <div style="text-align: center; line-height: 1.8; color: rgba(255, 255, 255, 0.9);">
-            <div style="margin-bottom: 2rem;">
-                <h3 style="color: rgba(100, 200, 255, 0.9); margin-bottom: 1rem; font-size: 1.8rem; text-shadow: 0 0 10px rgba(100, 200, 255, 0.4);">🎮 Game Development</h3>
-                <p style="font-size: 1.2rem;"><strong>Created by:</strong> Haoran Ni and Xiaoyuan Xu</p>
-                <p style="font-size: 1.1rem;">Game loop is mostly designed and implemented by Xiaoyuan Xu</p>
+        <div style="text-align: center; line-height: 1.6; color: rgba(255, 255, 255, 0.9); font-size: clamp(0.9rem, 2.5vw, 1.1rem);">
+            <div style="margin-bottom: 1.5rem;">
+                <h3 style="color: rgba(100, 200, 255, 0.9); margin-bottom: 0.8rem; font-size: clamp(1.2rem, 3.5vw, 1.6rem); text-shadow: 0 0 10px rgba(100, 200, 255, 0.4);">🎮 Game Development</h3>
+                <p style="font-size: clamp(1rem, 2.8vw, 1.2rem); margin-bottom: 0.5rem;"><strong>Created by:</strong> Haoran Ni and Xiaoyuan Xu</p>
+                <p style="font-size: clamp(0.9rem, 2.5vw, 1.1rem);">Game loop is mostly designed and implemented by Xiaoyuan Xu</p>
             </div>
             
-            <div style="margin-bottom: 2rem;">
-                <h3 style="color: rgba(100, 200, 255, 0.9); margin-bottom: 1rem; font-size: 1.8rem; text-shadow: 0 0 10px rgba(100, 200, 255, 0.4);">🎨 Art & Design</h3>
-                <p style="font-size: 1.1rem;">Character Art & UI Design: Haoran Ni</p>
-                <p style="font-size: 1.1rem;">With the help of Photoshop, Figma and cursor</p>
+            <div style="margin-bottom: 1.5rem;">
+                <h3 style="color: rgba(100, 200, 255, 0.9); margin-bottom: 0.8rem; font-size: clamp(1.2rem, 3.5vw, 1.6rem); text-shadow: 0 0 10px rgba(100, 200, 255, 0.4);">🎨 Art & Design</h3>
+                <p style="font-size: clamp(0.9rem, 2.5vw, 1.1rem); margin-bottom: 0.3rem;">Character Art & UI Design: Haoran Ni</p>
+                <p style="font-size: clamp(0.9rem, 2.5vw, 1.1rem);">With the help of Photoshop, Figma and cursor</p>
             </div>
             
-            <div style="margin-bottom: 2rem;">
-                <h3 style="color: rgba(100, 200, 255, 0.9); margin-bottom: 1rem; font-size: 1.8rem; text-shadow: 0 0 10px rgba(100, 200, 255, 0.4);">🎵 Audio</h3>
-                <p style="font-size: 1.1rem;"><strong>Background Music:</strong> "知晏"</p>
-                <p style="font-size: 1.1rem;">Sound Effects & Audio Design</p>
+            <div style="margin-bottom: 1.5rem;">
+                <h3 style="color: rgba(100, 200, 255, 0.9); margin-bottom: 0.8rem; font-size: clamp(1.2rem, 3.5vw, 1.6rem); text-shadow: 0 0 10px rgba(100, 200, 255, 0.4);">🎵 Audio</h3>
+                <p style="font-size: clamp(0.9rem, 2.5vw, 1.1rem); margin-bottom: 0.3rem;"><strong>Background Music:</strong> "当原野的风拥抱我"</p>
+                <p style="font-size: clamp(0.9rem, 2.5vw, 1.1rem);">Sound Effects & Audio Design</p>
             </div>
             
-            <div style="margin-bottom: 2rem;">
-                <h3 style="color: rgba(100, 200, 255, 0.9); margin-bottom: 1rem; font-size: 1.8rem; text-shadow: 0 0 10px rgba(100, 200, 255, 0.4);">💻 Technology</h3>
-                <p style="font-size: 1.1rem;">Frontend : HTML5, CSS3, JavaScript, Three.js</p>
-                <p style="font-size: 1.1rem;">Web Audio API & Responsive Design</p>
+            <div style="margin-bottom: 1.5rem;">
+                <h3 style="color: rgba(100, 200, 255, 0.9); margin-bottom: 0.8rem; font-size: clamp(1.2rem, 3.5vw, 1.6rem); text-shadow: 0 0 10px rgba(100, 200, 255, 0.4);">💻 Technology</h3>
+                <p style="font-size: clamp(0.9rem, 2.5vw, 1.1rem); margin-bottom: 0.3rem;">Frontend: HTML5, CSS3, JavaScript, Three.js</p>
+                <p style="font-size: clamp(0.9rem, 2.5vw, 1.1rem);">Web Audio API & Responsive Design</p>
             </div>
             
-            <div style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid rgba(100, 200, 255, 0.3);">
-                <p style="font-size: 1.3rem; font-weight: 600; color: #ffffff; text-shadow: 0 0 15px rgba(100, 200, 255, 0.6);">Thank you for playing!</p>
-                <p style="font-size: 1.1rem; margin-top: 1rem;">✨ Made with ❤️ for an amazing gaming experience</p>
+            <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 2px solid rgba(100, 200, 255, 0.3);">
+                <p style="font-size: clamp(1.1rem, 3vw, 1.3rem); font-weight: 600; color: #ffffff; text-shadow: 0 0 15px rgba(100, 200, 255, 0.6);">Thank you for playing!</p>
+                <p style="font-size: clamp(0.9rem, 2.5vw, 1.1rem); margin-top: 0.8rem;">✨ Made with ❤️ for an amazing gaming experience</p>
             </div>
         </div>
     `;
