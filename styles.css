@@ -47,7 +47,7 @@ body {
 }
 
 .character-image {
-    height: 80vh;
+    height: 88vh;
     width: auto;
     object-fit: contain;
     filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5));
@@ -70,6 +70,7 @@ body {
     align-items: center;
     justify-content: center;
     padding: 2rem;
+    padding-top: 1rem;
 }
 
 /* Vertical divider line */
@@ -99,7 +100,7 @@ body {
         0 0 30px rgba(100, 200, 255, 0.8),
         0 0 60px rgba(100, 200, 255, 0.6),
         0 5px 15px rgba(0,0,0,0.8);
-    margin-bottom: 3rem;
+    margin-bottom: 4rem;
     animation: titleGlow 3s ease-in-out infinite alternate;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -108,21 +109,22 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
+    gap: 1.2rem;
+    transform: translateY(-10vh);
 }
 
 .title-large {
-    font-size: clamp(4rem, 8vw, 7rem);
+    font-size: clamp(4.5rem, 9vw, 8rem);
     font-weight: 700;
 }
 
 .title-small {
-    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-size: clamp(1.8rem, 3.5vw, 3rem);
     font-weight: 400;
     position: relative;
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 2.5rem;
     letter-spacing: 0.3em;
 }
 
@@ -130,7 +132,7 @@ body {
 .title-small::after {
     content: '';
     height: 2px;
-    width: 4rem;
+    width: 5rem;
     background: linear-gradient(90deg, transparent, rgba(100, 200, 255, 0.8), transparent);
     box-shadow: 0 0 10px rgba(100, 200, 255, 0.5);
 }
@@ -154,9 +156,9 @@ body {
 .menu-buttons {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 2.5rem;
     width: 100%;
-    max-width: 350px;
+    max-width: 400px;
     z-index: 3;
 }
 
@@ -164,10 +166,10 @@ body {
     background: linear-gradient(135deg, rgba(30, 60, 150, 0.7) 0%, rgba(50, 90, 180, 0.7) 100%);
     border: 2px solid rgba(100, 200, 255, 0.8);
     border-radius: 12px;
-    padding: 1.2rem 2.5rem;
+    padding: 1.6rem 3rem;
     font-family: 'Inter', sans-serif;
     font-weight: 600;
-    font-size: 1.8rem;
+    font-size: 2.2rem;
     color: #ffffff;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -365,17 +367,26 @@ body {
         display: none;
     }
     
+    .game-title {
+        transform: translateY(-5vh);
+        margin-bottom: 3rem;
+    }
+    
     .title-large {
-        font-size: clamp(3rem, 7vw, 5rem);
+        font-size: clamp(3.5rem, 8vw, 6rem);
     }
     
     .title-small {
-        font-size: clamp(1.2rem, 2.5vw, 2rem);
+        font-size: clamp(1.5rem, 3vw, 2.5rem);
+    }
+    
+    .menu-buttons {
+        gap: 2rem;
     }
     
     .menu-btn {
-        font-size: 1.5rem;
-        padding: 1rem 2rem;
+        font-size: 1.8rem;
+        padding: 1.3rem 2.5rem;
     }
 }
 
@@ -384,28 +395,33 @@ body {
         height: 40vh;
     }
     
+    .game-title {
+        transform: translateY(-3vh);
+        margin-bottom: 2.5rem;
+    }
+    
     .title-large {
-        font-size: clamp(2.5rem, 8vw, 4rem);
+        font-size: clamp(2.8rem, 9vw, 4.5rem);
     }
     
     .title-small {
-        font-size: clamp(1rem, 3vw, 1.5rem);
-        gap: 1rem;
+        font-size: clamp(1.2rem, 4vw, 2rem);
+        gap: 1.5rem;
     }
     
     .title-small::before,
     .title-small::after {
-        width: 2rem;
-    }
-    
-    .menu-btn {
-        font-size: 1.3rem;
-        padding: 0.8rem 1.5rem;
+        width: 3rem;
     }
     
     .menu-buttons {
-        width: 100%;
-        max-width: 300px;
+        gap: 1.8rem;
+        max-width: 320px;
+    }
+    
+    .menu-btn {
+        font-size: 1.6rem;
+        padding: 1.1rem 2rem;
     }
 }
 
@@ -420,5 +436,4 @@ body {
     background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.2) 70%);
     pointer-events: none;
     z-index: 1;
-} 
 } 
