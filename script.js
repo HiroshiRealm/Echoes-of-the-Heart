@@ -182,12 +182,12 @@ function startJourney() {
     // Add sound effect (if available)
     playSound('start');
     
-    // Simulate loading and transition to game
+    // Simulate loading and transition to intro page
     setTimeout(() => {
         hideLoading();
-        // Here you would typically navigate to the actual game
-        alert('Welcome to your journey! 🌟\n\nThis is where the game would begin. You can replace this with actual game logic or navigation to game screens.');
-    }, 3000);
+        // Navigate to the intro-to-dialogue page
+        window.location.href = 'intro-to-dialogue.html';
+    }, 2000);
 }
 
 // Open Options modal
