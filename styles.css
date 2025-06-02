@@ -72,28 +72,6 @@ body {
     padding: 2rem;
 }
 
-/* Glass container for content */
-.content-container::before {
-    content: '';
-    position: absolute;
-    top: 10%;
-    left: 10%;
-    right: 10%;
-    bottom: 10%;
-    background: linear-gradient(135deg, 
-        rgba(20, 40, 80, 0.25) 0%, 
-        rgba(40, 80, 120, 0.15) 50%,
-        rgba(60, 100, 140, 0.25) 100%);
-    border: 2px solid rgba(100, 200, 255, 0.3);
-    border-radius: 30px;
-    backdrop-filter: blur(20px);
-    box-shadow: 
-        0 20px 60px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1),
-        0 0 40px rgba(100, 200, 255, 0.1);
-    z-index: -1;
-}
-
 /* Vertical divider line */
 .content-container::after {
     content: '';
@@ -115,7 +93,6 @@ body {
 .game-title {
     font-family: 'Inter', sans-serif;
     font-weight: 600;
-    font-size: clamp(3rem, 6vw, 5rem);
     line-height: 1.1;
     color: #ffffff;
     text-shadow: 
@@ -128,6 +105,34 @@ body {
     text-transform: uppercase;
     text-align: center;
     z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.title-large {
+    font-size: clamp(4rem, 8vw, 7rem);
+    font-weight: 700;
+}
+
+.title-small {
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-weight: 400;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    letter-spacing: 0.3em;
+}
+
+.title-small::before,
+.title-small::after {
+    content: '';
+    height: 2px;
+    width: 4rem;
+    background: linear-gradient(90deg, transparent, rgba(100, 200, 255, 0.8), transparent);
+    box-shadow: 0 0 10px rgba(100, 200, 255, 0.5);
 }
 
 @keyframes titleGlow {
@@ -356,20 +361,16 @@ body {
         padding: 1rem;
     }
     
-    .content-container::before {
-        top: 5%;
-        left: 5%;
-        right: 5%;
-        bottom: 5%;
-    }
-    
     .content-container::after {
         display: none;
     }
     
-    .game-title {
-        font-size: clamp(2.5rem, 6vw, 4rem);
-        margin-bottom: 2rem;
+    .title-large {
+        font-size: clamp(3rem, 7vw, 5rem);
+    }
+    
+    .title-small {
+        font-size: clamp(1.2rem, 2.5vw, 2rem);
     }
     
     .menu-btn {
@@ -383,8 +384,18 @@ body {
         height: 40vh;
     }
     
-    .game-title {
-        font-size: clamp(2rem, 8vw, 3rem);
+    .title-large {
+        font-size: clamp(2.5rem, 8vw, 4rem);
+    }
+    
+    .title-small {
+        font-size: clamp(1rem, 3vw, 1.5rem);
+        gap: 1rem;
+    }
+    
+    .title-small::before,
+    .title-small::after {
+        width: 2rem;
     }
     
     .menu-btn {
@@ -409,4 +420,5 @@ body {
     background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.2) 70%);
     pointer-events: none;
     z-index: 1;
+} 
 } 
