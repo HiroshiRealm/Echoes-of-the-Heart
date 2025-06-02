@@ -13,10 +13,25 @@
 
         body {
             font-family: 'Inter', 'Microsoft YaHei', sans-serif;
-            background: linear-gradient(135deg, #0a0a2e 0%, #16213e 50%, #1a1a3a 100%);
+            background-image: url('./assets/images/background2.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
             color: #ffffff;
             overflow: hidden;
             height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: -1;
         }
 
         /* ===== 开场介绍界面 ===== */
@@ -28,7 +43,7 @@
             height: 100%;
             display: flex;
             flex-direction: row;
-            z-index: 1000;
+            z-index: 2;
             opacity: 1;
             transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -40,7 +55,7 @@
         }
 
         .intro-left {
-            width: 75%;
+            width: 70%;
             height: 100%;
             display: flex;
             justify-content: center;
@@ -49,21 +64,25 @@
         }
 
         .intro-image {
-            width: 90%;
-            height: 90%;
-            background-image: url('./assets/images/intro-March7th.jpg');
-            background-size: contain;
+            width: 80%;
+            aspect-ratio: 4/3;
+            background-image: url('./assets/images/intro-March7th.png');
+            background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            border-radius: 15px;
+            border-radius: 20px;
             opacity: 0;
             transform: translateX(-50px) scale(0.9);
             animation: slideInLeft 2s ease-out 0.5s forwards;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.4),
+                0 10px 30px rgba(100, 200, 255, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(100, 200, 255, 0.3);
         }
 
         .intro-right {
-            width: 25%;
+            width: 30%;
             height: 100%;
             display: flex;
             flex-direction: column;
@@ -86,6 +105,18 @@
             transform: translateX(30px);
             margin-bottom: 12px;
             animation-fill-mode: forwards;
+        }
+
+        .text-highlight {
+            color: #8b3a3a;
+            text-shadow: 0 0 8px rgba(139, 58, 58, 0.6);
+            font-weight: 500;
+        }
+
+        .text-emphasis {
+            color: #64c8ff;
+            text-shadow: 0 0 10px rgba(100, 200, 255, 0.8);
+            font-weight: 500;
         }
 
         .continue-button {
@@ -283,6 +314,12 @@
                 height: 60%;
             }
             
+            .intro-image {
+                width: 70%;
+                aspect-ratio: 4/3;
+                border-radius: 15px;
+            }
+            
             .intro-right {
                 width: 100%;
                 height: 40%;
@@ -341,7 +378,7 @@
                 <div class="text-line">散落在未知的角落，</div>
                 <div class="text-line">等待着被重新拾起与理解……</div>
                 <div class="text-line">在这个梦幻般的空间里，</div>
-                <div class="text-line">时间失去了意义，现实与幻想交织，</div>
+                <div class="text-line"><span class="text-highlight">时间失去了意义，现实与幻想交织</span>，</div>
                 <div class="text-line">她必须通过对话来寻找真相。</div>
             </div>
             <button class="continue-button" id="continue-btn">进入回忆</button>
