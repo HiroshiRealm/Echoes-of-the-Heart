@@ -1,13 +1,21 @@
 // Game functionality and interactions
+let backgroundMusic;
+let isMusicPlaying = false;
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize audio
+    setupAudioControls();
+    
     // Add entrance animations
     animateOnLoad();
     
-    // Add background music controls (optional)
-    setupAudioControls();
-    
     // Add keyboard navigation
     setupKeyboardNavigation();
+    
+    // Try to start music (may be blocked by browser policy)
+    setTimeout(() => {
+        tryPlayMusic();
+    }, 1000);
 });
 
 // Animate elements on page load
@@ -49,6 +57,124 @@ function animateOnLoad() {
     }, 300);
 }
 
+// Audio controls setup
+function setupAudioControls() {
+    backgroundMusic = document.getElementById('background-music');
+    
+    if (backgroundMusic) {
+        // Set initial volume
+        backgroundMusic.volume = 0.5;
+        
+        // Add event listeners
+        backgroundMusic.addEventListener('loadstart', () => {
+            console.log('Music loading started');
+        });
+        
+        backgroundMusic.addEventListener('canplaythrough', () => {
+            console.log('Music can play through');
+        });
+        
+        backgroundMusic.addEventListener('error', (e) => {
+            console.log('Music loading error:', e);
+        });
+        
+        backgroundMusic.addEventListener('play', () => {
+            isMusicPlaying = true;
+            updateAudioIcon();
+        });
+        
+        backgroundMusic.addEventListener('pause', () => {
+            isMusicPlaying = false;
+            updateAudioIcon();
+        });
+    }
+}
+
+// Try to play background music
+function tryPlayMusic() {
+    if (backgroundMusic) {
+        backgroundMusic.play().then(() => {
+            console.log('Background music started successfully');
+            isMusicPlaying = true;
+            updateAudioIcon();
+        }).catch((error) => {
+            console.log('Auto-play blocked by browser. User interaction required:', error);
+            isMusicPlaying = false;
+            updateAudioIcon();
+            
+            // Show a subtle notification that music is available
+            showMusicNotification();
+        });
+    }
+}
+
+// Show music notification when autoplay is blocked
+function showMusicNotification() {
+    const notification = document.createElement('div');
+    notification.innerHTML = '🎵 Click anywhere to enable music';
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: rgba(30, 60, 150, 0.9);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 10px;
+        border: 2px solid rgba(100, 200, 255, 0.8);
+        font-family: 'Inter', sans-serif;
+        font-size: 1rem;
+        z-index: 1002;
+        backdrop-filter: blur(10px);
+        animation: slideInRight 0.5s ease-out;
+        cursor: pointer;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.remove();
+        }
+    }, 5000);
+    
+    // Click to play music and remove notification
+    notification.addEventListener('click', () => {
+        tryPlayMusic();
+        notification.remove();
+    });
+    
+    // Also enable music on any click on the page
+    const enableMusicOnClick = () => {
+        tryPlayMusic();
+        notification.remove();
+        document.removeEventListener('click', enableMusicOnClick);
+    };
+    
+    document.addEventListener('click', enableMusicOnClick);
+}
+
+// Toggle audio on/off
+function toggleAudio() {
+    if (!backgroundMusic) return;
+    
+    if (isMusicPlaying) {
+        backgroundMusic.pause();
+    } else {
+        backgroundMusic.play().catch((error) => {
+            console.log('Could not play music:', error);
+        });
+    }
+}
+
+// Update audio control icon
+function updateAudioIcon() {
+    const audioIcon = document.getElementById('audio-icon');
+    if (audioIcon) {
+        audioIcon.textContent = isMusicPlaying ? '🔊' : '🔇';
+    }
+}
+
 // Start Journey function
 function startJourney() {
     showLoading();
@@ -74,20 +200,22 @@ function openOptions() {
         
         <div style="display: grid; gap: 1.5rem;">
             <div class="option-group">
-                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: rgba(100, 200, 255, 0.9);">Audio Volume</label>
-                <input type="range" min="0" max="100" value="75" style="
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: rgba(100, 200, 255, 0.9);">Music Volume</label>
+                <input type="range" min="0" max="100" value="${Math.round((backgroundMusic?.volume || 0.5) * 100)}" 
+                       onchange="setMusicVolume(this.value)" 
+                       style="
                     width: 100%; 
                     height: 8px; 
                     border-radius: 5px; 
                     background: rgba(30, 60, 150, 0.5); 
                     outline: none;
                     -webkit-appearance: none;
-                " onchange="this.style.background = 'linear-gradient(to right, rgba(100, 200, 255, 0.8) 0%, rgba(100, 200, 255, 0.8) ' + this.value + '%, rgba(30, 60, 150, 0.5) ' + this.value + '%, rgba(30, 60, 150, 0.5) 100%)'">
+                ">
             </div>
             
             <div class="option-group">
-                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: rgba(100, 200, 255, 0.9);">Music Volume</label>
-                <input type="range" min="0" max="100" value="50" style="
+                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: rgba(100, 200, 255, 0.9);">Audio Volume</label>
+                <input type="range" min="0" max="100" value="75" style="
                     width: 100%; 
                     height: 8px; 
                     border-radius: 5px; 
@@ -129,12 +257,13 @@ function openOptions() {
             
             <div class="option-group">
                 <label style="display: flex; align-items: center; font-weight: 600; color: rgba(100, 200, 255, 0.9); cursor: pointer;">
-                    <input type="checkbox" style="
+                    <input type="checkbox" ${isMusicPlaying ? 'checked' : ''} 
+                           onchange="toggleAudio()" style="
                         margin-right: 0.8rem; 
                         transform: scale(1.2);
                         accent-color: rgba(100, 200, 255, 0.8);
                     ">
-                    Show Hints
+                    Enable Background Music
                 </label>
             </div>
             
@@ -169,6 +298,13 @@ function openOptions() {
     playSound('menu');
 }
 
+// Set music volume
+function setMusicVolume(value) {
+    if (backgroundMusic) {
+        backgroundMusic.volume = value / 100;
+    }
+}
+
 // Show Credits modal
 function showCredits() {
     const modal = document.getElementById('modal');
@@ -192,14 +328,14 @@ function showCredits() {
             
             <div style="margin-bottom: 2rem;">
                 <h3 style="color: rgba(100, 200, 255, 0.9); margin-bottom: 1rem; font-size: 1.8rem; text-shadow: 0 0 10px rgba(100, 200, 255, 0.4);">🎵 Audio</h3>
-                <p style="font-size: 1.1rem;">Background Music</p>
-                <p style="font-size: 1.1rem;">Sound Effects</p>
+                <p style="font-size: 1.1rem;"><strong>Background Music:</strong> "知晏"</p>
+                <p style="font-size: 1.1rem;">Sound Effects & Audio Design</p>
             </div>
             
             <div style="margin-bottom: 2rem;">
                 <h3 style="color: rgba(100, 200, 255, 0.9); margin-bottom: 1rem; font-size: 1.8rem; text-shadow: 0 0 10px rgba(100, 200, 255, 0.4);">💻 Technology</h3>
                 <p style="font-size: 1.1rem;">HTML5, CSS3, JavaScript</p>
-                <p style="font-size: 1.1rem;">Responsive Web Design</p>
+                <p style="font-size: 1.1rem;">Web Audio API & Responsive Design</p>
             </div>
             
             <div style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid rgba(100, 200, 255, 0.3);">
@@ -237,13 +373,6 @@ function showLoading() {
 function hideLoading() {
     const loading = document.getElementById('loading-overlay');
     loading.classList.remove('show');
-}
-
-// Audio controls setup
-function setupAudioControls() {
-    // This would typically initialize background music
-    // For now, we'll create placeholder audio functionality
-    console.log('Audio system initialized');
 }
 
 // Play sound effects
@@ -289,6 +418,11 @@ function setupKeyboardNavigation() {
                 if (!document.querySelector('.modal.show')) {
                     showCredits();
                 }
+                break;
+            case 'm':
+            case 'M':
+                // Toggle music with M key
+                toggleAudio();
                 break;
         }
     });

@@ -8,6 +8,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Background Music -->
+    <audio id="background-music" loop preload="auto">
+        <source src="assets/audio/当原野的风拥抱我.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
     <div class="game-container">
         <div class="background-overlay"></div>
         
@@ -50,6 +56,13 @@
             <span class="close" onclick="closeModal()">&times;</span>
             <div id="modal-body"></div>
         </div>
+    </div>
+
+    <!-- Audio Control Button -->
+    <div class="audio-control">
+        <button id="audio-toggle" onclick="toggleAudio()" title="Toggle Music">
+            <span id="audio-icon">🔊</span>
+        </button>
     </div>
 
     <script src="script.js"></script>
