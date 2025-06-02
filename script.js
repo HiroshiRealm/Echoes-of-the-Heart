@@ -317,13 +317,13 @@ function showCredits() {
             <div style="margin-bottom: 2rem;">
                 <h3 style="color: rgba(100, 200, 255, 0.9); margin-bottom: 1rem; font-size: 1.8rem; text-shadow: 0 0 10px rgba(100, 200, 255, 0.4);">🎮 Game Development</h3>
                 <p style="font-size: 1.2rem;"><strong>Created by:</strong> Haoran Ni and Xiaoyuan Xu</p>
-                <p style="font-size: 1.1rem;">The game loop is mostly designed and implemented by Xiaoyuan Xu</p>
+                <p style="font-size: 1.1rem;">Game loop is mostly designed and implemented by Xiaoyuan Xu</p>
             </div>
             
             <div style="margin-bottom: 2rem;">
                 <h3 style="color: rgba(100, 200, 255, 0.9); margin-bottom: 1rem; font-size: 1.8rem; text-shadow: 0 0 10px rgba(100, 200, 255, 0.4);">🎨 Art & Design</h3>
-                <p style="font-size: 1.1rem;">Character Art & UI Design: Haoran Ni, his ai partners and Honkai StarRail IP</p>
-                <p style="font-size: 1.1rem;">Background Illustrations</p>
+                <p style="font-size: 1.1rem;">Character Art & UI Design: Haoran Ni</p>
+                <p style="font-size: 1.1rem;">With the help of Photoshop, Figma and cursor</p>
             </div>
             
             <div style="margin-bottom: 2rem;">
@@ -334,7 +334,7 @@ function showCredits() {
             
             <div style="margin-bottom: 2rem;">
                 <h3 style="color: rgba(100, 200, 255, 0.9); margin-bottom: 1rem; font-size: 1.8rem; text-shadow: 0 0 10px rgba(100, 200, 255, 0.4);">💻 Technology</h3>
-                <p style="font-size: 1.1rem;">HTML5, CSS3, JavaScript</p>
+                <p style="font-size: 1.1rem;">Frontend : HTML5, CSS3, JavaScript, Three.js</p>
                 <p style="font-size: 1.1rem;">Web Audio API & Responsive Design</p>
             </div>
             
