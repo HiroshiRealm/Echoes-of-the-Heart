@@ -368,6 +368,110 @@
                 width: 250px;
             }
         }
+
+        /* ===== 拼图完成聚拢动画 ===== */
+        .puzzle-grid.completing {
+            position: relative;
+        }
+
+        .puzzle-piece.converging {
+            position: absolute;
+            z-index: 20;
+            transition: all 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* 为每个拼图块定义聚拢到中心的目标位置 */
+        .puzzle-piece[data-index="0"].converging { transform: translate(166px, 166px) scale(0.33); }
+        .puzzle-piece[data-index="1"].converging { transform: translate(0px, 166px) scale(0.33); }
+        .puzzle-piece[data-index="2"].converging { transform: translate(-166px, 166px) scale(0.33); }
+        .puzzle-piece[data-index="3"].converging { transform: translate(166px, 0px) scale(0.33); }
+        .puzzle-piece[data-index="4"].converging { transform: translate(0px, 0px) scale(0.33); }
+        .puzzle-piece[data-index="5"].converging { transform: translate(-166px, 0px) scale(0.33); }
+        .puzzle-piece[data-index="6"].converging { transform: translate(166px, -166px) scale(0.33); }
+        .puzzle-piece[data-index="7"].converging { transform: translate(0px, -166px) scale(0.33); }
+        .puzzle-piece[data-index="8"].converging { transform: translate(-166px, -166px) scale(0.33); }
+
+        /* 完整相机图片展示 */
+        .complete-camera {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 166px;
+            height: 166px;
+            background-image: url('./assets/images/camera/camera_whole.png');
+            background-size: cover;
+            background-position: center;
+            border-radius: 12px;
+            border: 3px solid var(--glass-border);
+            box-shadow: 
+                0 20px 60px rgba(100, 180, 255, 0.4),
+                0 0 40px rgba(100, 180, 255, 0.3),
+                inset 0 2px 0 rgba(255, 255, 255, 0.2);
+            opacity: 0;
+            transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 30;
+        }
+
+        .complete-camera.revealed {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            animation: completeCameraGlow 2s ease-in-out infinite alternate;
+        }
+
+        /* 原始相机图片展示（放大版本）*/
+        .complete-camera.origin-transition {
+            background-image: url('./assets/images/camera/camera_origin.png');
+            width: 50vh;
+            height: 50vh;
+            border-radius: 20px;
+            border: 4px solid var(--glass-border);
+            box-shadow: 
+                0 30px 100px rgba(100, 180, 255, 0.5),
+                0 0 80px rgba(100, 180, 255, 0.4),
+                inset 0 3px 0 rgba(255, 255, 255, 0.25);
+            animation: originCameraGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes completeCameraGlow {
+            0% {
+                box-shadow: 
+                    0 20px 60px rgba(100, 180, 255, 0.4),
+                    0 0 40px rgba(100, 180, 255, 0.3),
+                    inset 0 2px 0 rgba(255, 255, 255, 0.2);
+            }
+            100% {
+                box-shadow: 
+                    0 25px 80px rgba(100, 180, 255, 0.6),
+                    0 0 60px rgba(100, 180, 255, 0.5),
+                    inset 0 2px 0 rgba(255, 255, 255, 0.3);
+            }
+        }
+
+        @keyframes originCameraGlow {
+            0% {
+                box-shadow: 
+                    0 30px 100px rgba(100, 180, 255, 0.5),
+                    0 0 80px rgba(100, 180, 255, 0.4),
+                    inset 0 3px 0 rgba(255, 255, 255, 0.25);
+            }
+            100% {
+                box-shadow: 
+                    0 40px 120px rgba(100, 180, 255, 0.7),
+                    0 0 100px rgba(100, 180, 255, 0.6),
+                    inset 0 3px 0 rgba(255, 255, 255, 0.35);
+            }
+        }
+
+        /* 聚拢过程中的网格样式 */
+        .puzzle-grid.completing::before {
+            animation: none;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(100, 180, 255, 0.8), 
+                transparent);
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -573,15 +677,87 @@
             // 拼图完成时的效果
             onPuzzleComplete() {
                 setTimeout(() => {
-                    this.puzzleGrid.style.boxShadow = `
-                        0 25px 60px rgba(0, 0, 0, 0.8),
-                        0 0 60px rgba(100, 180, 255, 0.6),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.2)
-                    `;
-                    
-                    // 可以在这里添加更多完成效果
-                    console.log('🎉 恭喜！所有记忆都已收集完成！');
+                    this.startConvergenceAnimation();
                 }, 500);
+            }
+
+            // 开始聚拢动画
+            async startConvergenceAnimation() {
+                console.log('🎉 开始拼图聚拢动画...');
+                
+                // 添加完成状态类
+                this.puzzleGrid.classList.add('completing');
+                
+                // 记录每个拼图块的原始位置，并设置为绝对定位
+                this.pieces.forEach((piece, index) => {
+                    const rect = piece.getBoundingClientRect();
+                    const gridRect = this.puzzleGrid.getBoundingClientRect();
+                    
+                    piece.style.left = (rect.left - gridRect.left) + 'px';
+                    piece.style.top = (rect.top - gridRect.top) + 'px';
+                    piece.style.width = rect.width + 'px';
+                    piece.style.height = rect.height + 'px';
+                    
+                    // 添加聚拢类，触发CSS动画
+                    setTimeout(() => {
+                        piece.classList.add('converging');
+                    }, index * 100); // 错开每个块的启动时间
+                });
+
+                // 等待聚拢动画完成
+                await new Promise(resolve => setTimeout(resolve, 2500));
+                
+                // 隐藏拼图块并显示完整相机
+                this.pieces.forEach(piece => {
+                    piece.style.opacity = '0';
+                });
+                
+                // 创建并显示完整相机图片
+                const completeCamera = document.createElement('div');
+                completeCamera.className = 'complete-camera';
+                this.puzzleGrid.appendChild(completeCamera);
+                
+                // 延迟显示完整相机
+                setTimeout(() => {
+                    completeCamera.classList.add('revealed');
+                }, 200);
+                
+                // 等待完整相机展示
+                await new Promise(resolve => setTimeout(resolve, 3000));
+                
+                // 开始原始相机过渡动画
+                await this.transitionToOriginCamera(completeCamera);
+                
+                // 跳转到结局页面
+                this.transitionToEnding();
+            }
+
+            // 过渡到原始相机图片
+            async transitionToOriginCamera(cameraElement) {
+                console.log('📸 切换到原始相机图片...');
+                
+                // 添加原始相机过渡类，触发图片切换和放大动画
+                cameraElement.classList.add('origin-transition');
+                
+                // 等待过渡动画完成
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                // 额外展示时间
+                await new Promise(resolve => setTimeout(resolve, 2500));
+            }
+
+            // 跳转到结局页面
+            transitionToEnding() {
+                console.log('🌟 跳转到结局页面...');
+                
+                // 创建淡出效果
+                document.body.style.transition = 'opacity 1s ease-out';
+                document.body.style.opacity = '0';
+                
+                // 等待淡出完成后跳转
+                setTimeout(() => {
+                    window.location.href = './ending.html';
+                }, 1000);
             }
 
             // 更新拼图显示
