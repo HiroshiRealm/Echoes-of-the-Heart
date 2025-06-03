@@ -254,6 +254,83 @@
     </div>
 
     <script>
+        // ===== 时间配置中心 =====
+        const TIMING_CONFIG = {
+            // 文字动画配置
+            textAnimation: {
+                // 每行文字的延迟时间（秒），可以独立调整每行以匹配音频
+                lineDelays: [
+                    0.0,    // "三月七发现自己漂浮在一片广阔而混乱的意识空间中，"
+                    5.0,    // "她的记忆如同破碎的镜子，"
+                    7.2,    // "散落在未知的角落，"
+                    9.3,    // "等待着被重新拾起与理解……"
+                    12.5,    // "在这个梦幻般的空间里，"
+                    14.7,   // "时间失去了意义，现实与幻想交织"
+                    19.5    // "她必须通过对话来寻找真相。"
+                ],
+                
+                // 每行文字显现的动画持续时间（秒）
+                revealDuration: 1.0,
+                
+                // 最后一行完成后的等待时间（秒）
+                endWaitTime: 3.0,
+                
+                // 按钮显示延迟时间（相对于最后一行文字完成）
+                buttonDelay: 1.0
+            },
+            
+            // 整体动画配置
+            globalAnimation: {
+                // 页面加载后开始动画的延迟（秒）
+                startDelay: 0.5,
+                
+                // 页面跳转淡出时间（秒）
+                fadeOutDuration: 1.0
+            },
+            
+            // 调试和开发配置
+            debug: {
+                // 是否在控制台显示时间信息
+                showTimingLogs: true,
+                
+                // 是否启用快速模式（缩短所有时间用于调试）
+                fastMode: false,
+                fastModeSpeedMultiplier: 0.3
+            }
+        };
+
+        // ===== 时间计算工具 =====
+        const TimingUtils = {
+            // 获取实际延迟时间（考虑快速模式）
+            getActualDelay(delay) {
+                if (TIMING_CONFIG.debug.fastMode) {
+                    return delay * TIMING_CONFIG.debug.fastModeSpeedMultiplier;
+                }
+                return delay;
+            },
+            
+            // 将秒转换为毫秒
+            toMs(seconds) {
+                return this.getActualDelay(seconds) * 1000;
+            },
+            
+            // 计算文字动画的总时长
+            getTotalTextDuration() {
+                const lastLineDelay = Math.max(...TIMING_CONFIG.textAnimation.lineDelays);
+                const revealDuration = TIMING_CONFIG.textAnimation.revealDuration;
+                const endWait = TIMING_CONFIG.textAnimation.endWaitTime;
+                return lastLineDelay + revealDuration + endWait;
+            },
+            
+            // 打印时间调试信息
+            logTiming(message, timeValue) {
+                if (TIMING_CONFIG.debug.showTimingLogs) {
+                    const mode = TIMING_CONFIG.debug.fastMode ? '[快速模式]' : '[正常模式]';
+                    console.log(`${mode} ${message}: ${timeValue.toFixed(2)}秒`);
+                }
+            }
+        };
+
         // ===== 全局状态管理 =====
         let introCompleted = false;
         let autoTransitionMode = false; // 设为 false 启用按钮模式
@@ -269,6 +346,7 @@
                 // 设置音频事件监听器
                 this.audio.addEventListener('loadeddata', () => {
                     console.log('卡芙卡念白音频加载完成');
+                    TimingUtils.logTiming('音频时长', this.audio.duration || 0);
                 });
                 
                 this.audio.addEventListener('error', (e) => {
@@ -324,19 +402,28 @@
         function startIntroAnimation() {
             const textLines = document.querySelectorAll('.text-line');
             const continueBtn = document.getElementById('continue-btn');
+            const config = TIMING_CONFIG.textAnimation;
             
+            TimingUtils.logTiming('开始文字动画', 0);
+            TimingUtils.logTiming('动画总时长', TimingUtils.getTotalTextDuration());
+            
+            // 为每行文字设置独立的延迟时间
             textLines.forEach((line, index) => {
+                const delay = config.lineDelays[index] || 0;
+                const actualDelayMs = TimingUtils.toMs(delay);
+                
+                TimingUtils.logTiming(`第${index + 1}行文字`, delay);
+                
                 setTimeout(() => {
-                    line.style.animation = `textReveal 1s ease-out ${index * 0.8}s forwards`;
-                }, index * 800);
+                    line.style.animation = `textReveal ${TimingUtils.getActualDelay(config.revealDuration)}s ease-out forwards`;
+                }, actualDelayMs);
             });
             
-            // 计算最后一行文字完全显示完成的时间
-            // 最后一行的延迟时间 + 文字动画时间 + 额外阅读时间
-            const lastLineDelay = textLines.length * 0.8 * 1000; // 最后一行的延迟
-            const textAnimationDuration = 1000; // 文字动画持续时间
-            const readingTime = 4000; // 给用户额外4秒阅读时间
-            const totalDuration = lastLineDelay + textAnimationDuration + readingTime;
+            // 计算按钮显示时间
+            const totalDuration = TimingUtils.getTotalTextDuration();
+            const buttonShowTime = totalDuration + config.buttonDelay;
+            
+            TimingUtils.logTiming('按钮显示时间', buttonShowTime);
             
             setTimeout(() => {
                 introCompleted = true;
@@ -345,12 +432,12 @@
                     // 自动过渡模式
                     setTimeout(() => {
                         goToDialogue();
-                    }, 2000);
+                    }, TimingUtils.toMs(2));
                 } else {
                     // 按钮模式
                     continueBtn.classList.add('show');
                 }
-            }, totalDuration);
+            }, TimingUtils.toMs(buttonShowTime));
         }
 
         // ===== 跳转到对话页面 =====
@@ -359,14 +446,50 @@
             kafkaAudio.stop();
             
             // 页面淡出效果
-            document.body.style.transition = 'opacity 1s ease-out';
+            const fadeTime = TIMING_CONFIG.globalAnimation.fadeOutDuration;
+            document.body.style.transition = `opacity ${TimingUtils.getActualDelay(fadeTime)}s ease-out`;
             document.body.style.opacity = '0';
             
             // 跳转到对话页面
             setTimeout(() => {
                 window.location.href = 'dialogue.html';
-            }, 1000);
+            }, TimingUtils.toMs(fadeTime));
         }
+
+        // ===== 开发者工具函数 =====
+        // 在控制台中可以调用这些函数来调试时间
+        window.TimingDebug = {
+            // 切换快速模式
+            toggleFastMode() {
+                TIMING_CONFIG.debug.fastMode = !TIMING_CONFIG.debug.fastMode;
+                console.log(`快速模式: ${TIMING_CONFIG.debug.fastMode ? '开启' : '关闭'}`);
+                location.reload();
+            },
+            
+            // 显示当前时间配置
+            showConfig() {
+                console.table(TIMING_CONFIG.textAnimation.lineDelays.map((delay, index) => ({
+                    行号: index + 1,
+                    延迟时间: delay + '秒',
+                    实际延迟: TimingUtils.getActualDelay(delay).toFixed(2) + '秒'
+                })));
+            },
+            
+            // 修改特定行的延迟时间
+            setLineDelay(lineIndex, delaySeconds) {
+                if (lineIndex >= 0 && lineIndex < TIMING_CONFIG.textAnimation.lineDelays.length) {
+                    TIMING_CONFIG.textAnimation.lineDelays[lineIndex] = delaySeconds;
+                    console.log(`第${lineIndex + 1}行延迟时间已设置为 ${delaySeconds} 秒`);
+                } else {
+                    console.error('行号超出范围');
+                }
+            },
+            
+            // 重新开始动画（用于测试）
+            restart() {
+                location.reload();
+            }
+        };
 
         // ===== 事件监听器 =====
         document.addEventListener('DOMContentLoaded', () => {
@@ -374,7 +497,8 @@
             kafkaAudio.init();
             
             // 开始介绍动画
-            setTimeout(startIntroAnimation, 500);
+            const startDelay = TIMING_CONFIG.globalAnimation.startDelay;
+            setTimeout(startIntroAnimation, TimingUtils.toMs(startDelay));
             
             // 继续按钮点击
             document.getElementById('continue-btn').addEventListener('click', () => {
@@ -382,6 +506,14 @@
                     goToDialogue();
                 }
             });
+            
+            // 显示调试信息
+            if (TIMING_CONFIG.debug.showTimingLogs) {
+                console.log('=== 时间配置调试信息 ===');
+                console.log('使用 TimingDebug.showConfig() 查看详细配置');
+                console.log('使用 TimingDebug.toggleFastMode() 切换快速模式');
+                console.log('使用 TimingDebug.setLineDelay(行号, 秒数) 修改特定行的时间');
+            }
         });
 
         // ===== 切换过渡模式 =====
