@@ -263,8 +263,13 @@
                 }, index * 800);
             });
             
-            // 所有文字显示完毕后的处理
-            const totalDuration = textLines.length * 800 + 1000;
+            // 计算最后一行文字完全显示完成的时间
+            // 最后一行的延迟时间 + 文字动画时间 + 额外阅读时间
+            const lastLineDelay = textLines.length * 0.8 * 1000; // 最后一行的延迟
+            const textAnimationDuration = 1000; // 文字动画持续时间
+            const readingTime = 4000; // 给用户额外2秒阅读时间
+            const totalDuration = lastLineDelay + textAnimationDuration + readingTime;
+            
             setTimeout(() => {
                 introCompleted = true;
                 
