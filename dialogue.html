@@ -163,9 +163,111 @@
                 height: 250px;
             }
         }
+
+        /* ===== 音频控制 ===== */
+        .audio-control {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .audio-toggle {
+            width: 50px;
+            height: 50px;
+            background: rgba(20, 30, 60, 0.8);
+            border: 2px solid rgba(100, 150, 255, 0.3);
+            border-radius: 50%;
+            color: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .audio-toggle:hover {
+            border-color: rgba(100, 200, 255, 0.6);
+            box-shadow: 0 0 20px rgba(100, 200, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(20, 30, 60, 0.8);
+            padding: 8px 12px;
+            border-radius: 25px;
+            border: 2px solid rgba(100, 150, 255, 0.3);
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.3s ease;
+        }
+
+        .volume-control.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .volume-slider {
+            width: 80px;
+            height: 4px;
+            background: rgba(100, 150, 255, 0.3);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: #64c8ff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(100, 200, 255, 0.5);
+        }
+
+        .volume-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: #64c8ff;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 10px rgba(100, 200, 255, 0.5);
+        }
     </style>
 </head>
 <body>
+    <!-- 背景音乐 -->
+    <audio id="background-music" loop preload="auto">
+        <source src="assets/audio/Brian Eno - An Ending (Ascent).mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <!-- 音频控制 -->
+    <div class="audio-control">
+        <button class="audio-toggle" id="audio-toggle" title="Toggle Music">
+            <span id="audio-icon">🔊</span>
+        </button>
+        <div class="volume-control" id="volume-control">
+            <span style="font-size: 12px; color: #64c8ff;">♪</span>
+            <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="50">
+            <span style="font-size: 10px; color: #64c8ff;" id="volume-text">50%</span>
+        </div>
+    </div>
+
     <!-- WebGL粒子背景 -->
     <div id="particle-background"></div>
 
@@ -204,6 +306,101 @@
         };
 
         let scene, camera, renderer, particles, time = 0;
+
+        // ===== 音频控制系统 =====
+        let audioSystem = {
+            music: null,
+            isPlaying: false,
+            volume: 0.5,
+            
+            init() {
+                this.music = document.getElementById('background-music');
+                this.music.volume = this.volume;
+                
+                // 尝试自动播放
+                this.tryAutoPlay();
+                
+                // 绑定事件
+                this.bindEvents();
+            },
+            
+            async tryAutoPlay() {
+                try {
+                    await this.music.play();
+                    this.isPlaying = true;
+                    this.updateIcon();
+                } catch (error) {
+                    console.log('自动播放被阻止，用户需要手动启动音乐');
+                    this.isPlaying = false;
+                    this.updateIcon();
+                }
+            },
+            
+            toggle() {
+                if (this.isPlaying) {
+                    this.music.pause();
+                    this.isPlaying = false;
+                } else {
+                    this.music.play();
+                    this.isPlaying = true;
+                }
+                this.updateIcon();
+            },
+            
+            setVolume(volume) {
+                this.volume = volume / 100;
+                this.music.volume = this.volume;
+                document.getElementById('volume-text').textContent = volume + '%';
+            },
+            
+            updateIcon() {
+                const icon = document.getElementById('audio-icon');
+                icon.textContent = this.isPlaying ? '🔊' : '🔇';
+            },
+            
+            bindEvents() {
+                // 播放/暂停按钮
+                document.getElementById('audio-toggle').addEventListener('click', () => {
+                    this.toggle();
+                });
+                
+                // 音量控制
+                const volumeSlider = document.getElementById('volume-slider');
+                volumeSlider.addEventListener('input', (e) => {
+                    this.setVolume(e.target.value);
+                });
+                
+                // 显示/隐藏音量控制
+                const audioToggle = document.getElementById('audio-toggle');
+                const volumeControl = document.getElementById('volume-control');
+                
+                audioToggle.addEventListener('mouseenter', () => {
+                    volumeControl.classList.add('show');
+                });
+                
+                document.querySelector('.audio-control').addEventListener('mouseleave', () => {
+                    volumeControl.classList.remove('show');
+                });
+                
+                // 键盘快捷键
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'm' || e.key === 'M') {
+                        this.toggle();
+                    }
+                });
+                
+                // 处理音频加载错误
+                this.music.addEventListener('error', () => {
+                    console.error('背景音乐加载失败');
+                });
+                
+                // 音频结束后重新播放
+                this.music.addEventListener('ended', () => {
+                    this.music.currentTime = 0;
+                    this.music.play();
+                });
+            }
+        };
 
         // ===== WebGL粒子系统 =====
         function hash(n) {
@@ -479,6 +676,9 @@
 
         // ===== 事件监听器 =====
         document.addEventListener('DOMContentLoaded', () => {
+            // 初始化音频系统
+            audioSystem.init();
+            
             // 立即初始化粒子系统
             initParticleSystem();
             
