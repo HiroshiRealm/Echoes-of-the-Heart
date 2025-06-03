@@ -58,6 +58,106 @@
             pointer-events: all;
         }
 
+        /* ===== 记忆进度入口 ===== */
+        .memory-progress-entrance {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 80px;
+            cursor: pointer;
+            z-index: 150;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .memory-progress-entrance:hover {
+            transform: scale(1.05);
+        }
+
+        .memory-progress-image {
+            width: 80px;
+            height: 80px;
+            background-image: url('./assets/images/camera/camera_whole.png');
+            background-size: cover;
+            background-position: center;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 8px 25px rgba(0, 0, 0, 0.6),
+                0 0 20px rgba(255, 215, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        /* 蒙版层 */
+        .memory-progress-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(1px);
+            transition: all 0.3s ease;
+        }
+
+        .memory-progress-entrance:hover .memory-progress-image::before {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        /* 边框光效 */
+        .memory-progress-image::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, 
+                rgba(255, 215, 0, 0.6), 
+                rgba(255, 235, 59, 0.4), 
+                rgba(255, 193, 7, 0.6));
+            border-radius: 14px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .memory-progress-entrance:hover .memory-progress-image::after {
+            opacity: 1;
+            animation: goldenGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes goldenGlow {
+            0% {
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            }
+            100% {
+                box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+            }
+        }
+
+        .memory-progress-text {
+            margin-top: 8px;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 500;
+            color: #ffd700;
+            text-shadow: 
+                0 0 10px rgba(255, 215, 0, 0.6),
+                0 1px 2px rgba(0, 0, 0, 0.8);
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .memory-progress-entrance:hover .memory-progress-text {
+            color: #ffed4a;
+            text-shadow: 
+                0 0 15px rgba(255, 215, 0, 0.8),
+                0 1px 3px rgba(0, 0, 0, 0.9);
+        }
+
         .dialogue-container {
             position: fixed;
             bottom: 0;
@@ -616,6 +716,12 @@
 
     <!-- 对话界面 -->
     <div id="dialogue-screen">
+        <!-- 记忆进度入口 -->
+        <div class="memory-progress-entrance" onclick="goToMemoryProgress()">
+            <div class="memory-progress-image"></div>
+            <div class="memory-progress-text">记忆进度</div>
+        </div>
+
         <div class="dialogue-container">
             <div class="chat-area" id="chat-area">
                 <div class="message system">
@@ -1047,6 +1153,18 @@
                     addMessage(randomResponse);
                 }, 1000 + Math.random() * 2000);
             }
+        }
+
+        // ===== 页面跳转函数 =====
+        function goToMemoryProgress() {
+            // 创建淡出效果
+            document.body.style.transition = 'opacity 0.8s ease-out';
+            document.body.style.opacity = '0';
+            
+            // 等待淡出完成后跳转
+            setTimeout(() => {
+                window.location.href = './memory-progress.html';
+            }, 800);
         }
 
         // ===== 事件监听器 =====

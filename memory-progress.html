@@ -328,6 +328,52 @@
             z-index: 50;
         }
 
+        /* ===== 返回按钮 ===== */
+        .return-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, 
+                var(--glass-primary) 0%, 
+                rgba(120, 200, 255, 0.2) 100%);
+            border: 2px solid var(--glass-border);
+            border-radius: 25px;
+            color: var(--glass-text);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(15px);
+            box-shadow: 
+                0 8px 25px rgba(0, 0, 0, 0.3),
+                0 0 20px rgba(100, 180, 255, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .return-button:hover {
+            background: linear-gradient(135deg, 
+                rgba(100, 180, 255, 0.25) 0%, 
+                rgba(120, 200, 255, 0.3) 100%);
+            border-color: rgba(100, 180, 255, 0.5);
+            box-shadow: 
+                0 12px 35px rgba(0, 0, 0, 0.4),
+                0 0 30px rgba(100, 180, 255, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .return-button::before {
+            content: '←';
+            font-size: 16px;
+            font-weight: bold;
+        }
+
         .test-button {
             padding: 8px 16px;
             background: var(--glass-primary);
@@ -521,6 +567,9 @@
         <button class="test-button" onclick="resetProgress()">重置进度</button>
         <button class="test-button" onclick="unlockAll()">解锁全部</button>
     </div>
+
+    <!-- 返回按钮 -->
+    <button class="return-button" onclick="goBack()">返回</button>
 
     <script>
         // ===== 记忆拼图管理器 =====
@@ -863,6 +912,18 @@
             getProgress: () => memoryPuzzle?.getProgress(),
             resetProgress: () => memoryPuzzle?.resetProgress()
         };
+
+        // ===== 返回按钮功能 =====
+        function goBack() {
+            // 创建淡出效果
+            document.body.style.transition = 'opacity 0.8s ease-out';
+            document.body.style.opacity = '0';
+            
+            // 等待淡出完成后跳转回对话界面
+            setTimeout(() => {
+                window.location.href = './dialogue.html';
+            }, 800);
+        }
     </script>
 </body>
 </html> 
