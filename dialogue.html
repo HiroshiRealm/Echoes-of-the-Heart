@@ -45,7 +45,7 @@
             z-index: 1;
         }
 
-        /* ===== 对话界面 ===== */
+        /* ===== 对话界面 - 琉璃忆境主题 ===== */
         #dialogue-screen {
             position: absolute;
             top: 0;
@@ -59,57 +59,92 @@
         }
 
         .dialogue-container {
-            position: absolute;
-            bottom: 40px;
+            position: fixed;
+            bottom: 0;
             left: 50%;
             transform: translateX(-50%);
             width: 90%;
             max-width: 900px;
-            background: rgba(18, 18, 20, 0.95);
-            border: 1px solid rgba(60, 60, 65, 0.8);
-            border-radius: 4px;
+            background: rgba(8, 12, 18, 0.85);
+            border: 1px solid rgba(100, 180, 255, 0.15);
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
             padding: 0;
             box-shadow: 
-                0 25px 50px rgba(0, 0, 0, 0.8),
-                0 0 0 1px rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
+                0 25px 60px rgba(0, 0, 0, 0.9),
+                0 0 0 1px rgba(255, 255, 255, 0.03),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(25px);
             overflow: hidden;
+        }
+
+        .dialogue-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(100, 180, 255, 0.4), 
+                rgba(180, 120, 255, 0.3), 
+                transparent);
+            animation: shimmerTop 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmerTop {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
         }
 
         .chat-area {
             height: 350px;
             overflow-y: auto;
             padding: 24px;
-            background: rgba(12, 12, 14, 0.7);
+            background: rgba(4, 8, 12, 0.6);
             scrollbar-width: thin;
-            scrollbar-color: rgba(100, 200, 255, 0.6) rgba(30, 30, 35, 0.5);
+            scrollbar-color: rgba(100, 180, 255, 0.6) rgba(20, 25, 35, 0.8);
+            position: relative;
         }
 
-        /* ===== 自定义滚动条 ===== */
+        /* ===== 琉璃滚动条 ===== */
         .chat-area::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
 
         .chat-area::-webkit-scrollbar-track {
-            background: rgba(30, 30, 35, 0.5);
-            border-radius: 0;
+            background: rgba(20, 25, 35, 0.8);
+            border-radius: 3px;
+            box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
         }
 
         .chat-area::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, rgba(100, 200, 255, 0.8), rgba(120, 160, 255, 0.6));
-            border-radius: 0;
-            border: 1px solid rgba(100, 200, 255, 0.3);
+            background: linear-gradient(180deg, 
+                rgba(100, 180, 255, 0.9), 
+                rgba(120, 160, 255, 0.7));
+            border-radius: 3px;
+            border: 1px solid rgba(100, 180, 255, 0.3);
+            box-shadow: 
+                0 0 8px rgba(100, 180, 255, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
 
         .chat-area::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(180deg, rgba(100, 200, 255, 1), rgba(120, 160, 255, 0.8));
-            box-shadow: 0 0 8px rgba(100, 200, 255, 0.4);
+            background: linear-gradient(180deg, 
+                rgba(100, 180, 255, 1), 
+                rgba(120, 160, 255, 0.9));
+            box-shadow: 
+                0 0 12px rgba(100, 180, 255, 0.6),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
         }
 
+        /* ===== 记忆碎片消息 ===== */
         .message {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             display: flex;
-            animation: messageSlideIn 0.4s ease-out;
+            animation: crystalizeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
         }
 
         .message.user {
@@ -122,33 +157,33 @@
 
         .message-bubble {
             max-width: 75%;
-            padding: 12px 18px;
+            padding: 16px 22px;
             font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
             font-size: 15px;
-            line-height: 1.4;
-            border-radius: 2px;
+            line-height: 1.5;
+            border-radius: 6px;
             position: relative;
             word-wrap: break-word;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(15px);
+            overflow: hidden;
         }
 
+        /* ===== 玩家的琉璃碎片（冰蓝色系）===== */
         .message.user .message-bubble {
-            background: rgba(100, 200, 255, 0.18);
-            border: 1px solid rgba(100, 200, 255, 0.5);
-            color: #ffffff;
+            background: linear-gradient(135deg, 
+                rgba(100, 180, 255, 0.12) 0%, 
+                rgba(120, 200, 255, 0.08) 50%, 
+                rgba(140, 220, 255, 0.15) 100%);
+            border: 1px solid rgba(100, 180, 255, 0.25);
+            color: #f0f8ff;
             text-align: right;
             box-shadow: 
-                0 0 20px rgba(100, 200, 255, 0.4),
-                0 0 40px rgba(100, 200, 255, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-
-        .message.user .message-bubble:hover {
-            box-shadow: 
-                0 0 25px rgba(100, 200, 255, 0.6),
-                0 0 50px rgba(100, 200, 255, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.15);
-            transform: translateY(-1px);
+                0 8px 32px rgba(100, 180, 255, 0.2),
+                0 0 24px rgba(100, 180, 255, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                inset 0 -1px 0 rgba(100, 180, 255, 0.1);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
 
         .message.user .message-bubble::before {
@@ -156,29 +191,55 @@
             position: absolute;
             top: 0;
             right: -1px;
-            width: 3px;
+            width: 2px;
             height: 100%;
-            background: linear-gradient(180deg, #64c8ff, #78a0ff);
-            border-radius: 0;
-            box-shadow: 0 0 8px rgba(100, 200, 255, 0.6);
+            background: linear-gradient(180deg, 
+                rgba(140, 220, 255, 0.9), 
+                rgba(100, 180, 255, 0.7), 
+                rgba(80, 160, 255, 0.8));
+            border-radius: 0 6px 6px 0;
+            box-shadow: 
+                0 0 12px rgba(120, 200, 255, 0.6),
+                inset 0 0 2px rgba(255, 255, 255, 0.3);
         }
 
+        .message.user .message-bubble::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2), 
+                transparent);
+            border-radius: 6px;
+        }
+
+        .message.user .message-bubble:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 12px 40px rgba(100, 180, 255, 0.3),
+                0 0 32px rgba(100, 180, 255, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                inset 0 -1px 0 rgba(100, 180, 255, 0.15);
+        }
+
+        /* ===== AI的琉璃碎片（紫粉色系）===== */
         .message.system .message-bubble {
-            background: rgba(45, 45, 50, 0.9);
-            border: 1px solid rgba(255, 182, 193, 0.4);
-            color: #f0f0f0;
+            background: linear-gradient(135deg, 
+                rgba(180, 120, 200, 0.12) 0%, 
+                rgba(200, 140, 220, 0.08) 50%, 
+                rgba(220, 160, 240, 0.15) 100%);
+            border: 1px solid rgba(180, 120, 200, 0.25);
+            color: #f8f0ff;
             box-shadow: 
-                0 0 20px rgba(255, 182, 193, 0.3),
-                0 0 40px rgba(255, 192, 203, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
-        }
-
-        .message.system .message-bubble:hover {
-            box-shadow: 
-                0 0 25px rgba(255, 182, 193, 0.5),
-                0 0 50px rgba(255, 192, 203, 0.25),
-                inset 0 1px 0 rgba(255, 255, 255, 0.08);
-            transform: translateY(-1px);
+                0 8px 32px rgba(180, 120, 200, 0.2),
+                0 0 24px rgba(180, 120, 200, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                inset 0 -1px 0 rgba(180, 120, 200, 0.1);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
 
         .message.system .message-bubble::before {
@@ -186,70 +247,132 @@
             position: absolute;
             top: 0;
             left: -1px;
-            width: 3px;
+            width: 2px;
             height: 100%;
-            background: linear-gradient(180deg, rgba(255, 182, 193, 0.9), rgba(255, 192, 203, 0.7));
-            border-radius: 0;
-            box-shadow: 0 0 8px rgba(255, 182, 193, 0.5);
+            background: linear-gradient(180deg, 
+                rgba(220, 160, 240, 0.9), 
+                rgba(180, 120, 200, 0.7), 
+                rgba(160, 100, 180, 0.8));
+            border-radius: 6px 0 0 6px;
+            box-shadow: 
+                0 0 12px rgba(200, 140, 220, 0.6),
+                inset 0 0 2px rgba(255, 255, 255, 0.3);
         }
 
+        .message.system .message-bubble::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.2), 
+                transparent);
+            border-radius: 6px;
+        }
+
+        .message.system .message-bubble:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 12px 40px rgba(180, 120, 200, 0.3),
+                0 0 32px rgba(180, 120, 200, 0.25),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                inset 0 -1px 0 rgba(180, 120, 200, 0.15);
+        }
+
+        /* ===== 聚焦水晶板（输入区域）===== */
         .input-area {
             display: flex;
-            gap: 12px;
+            gap: 16px;
             align-items: center;
-            padding: 20px 24px;
-            background: rgba(20, 20, 22, 0.9);
-            border-top: 1px solid rgba(60, 60, 65, 0.5);
+            padding: 24px;
+            background: linear-gradient(135deg, 
+                rgba(8, 12, 18, 0.9) 0%, 
+                rgba(12, 16, 24, 0.95) 100%);
+            border-top: 1px solid rgba(100, 180, 255, 0.15);
+            position: relative;
+            backdrop-filter: blur(20px);
+        }
+
+        .input-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20px;
+            right: 20px;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(100, 180, 255, 0.3), 
+                rgba(180, 120, 200, 0.2), 
+                transparent);
         }
 
         .chat-input {
             flex: 1;
-            padding: 14px 18px;
-            background: rgba(35, 35, 40, 0.8);
-            border: 1px solid rgba(60, 60, 65, 0.7);
-            border-radius: 2px;
-            color: #ffffff;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, 
+                rgba(20, 30, 45, 0.8) 0%, 
+                rgba(25, 35, 50, 0.9) 100%);
+            border: 1px solid rgba(100, 180, 255, 0.2);
+            border-radius: 6px;
+            color: #f0f8ff;
             font-size: 15px;
             font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
             outline: none;
-            transition: all 0.2s ease;
-            placeholder-color: rgba(150, 150, 155, 0.7);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                inset 0 1px 3px rgba(0, 0, 0, 0.3),
+                inset 0 -1px 0 rgba(100, 180, 255, 0.1);
+            position: relative;
+            overflow: hidden;
         }
 
         .chat-input::placeholder {
-            color: rgba(150, 150, 155, 0.7);
+            color: rgba(160, 200, 255, 0.6);
+            font-style: italic;
         }
 
         .chat-input:focus {
-            border-color: rgba(100, 200, 255, 0.8);
+            border-color: rgba(100, 180, 255, 0.6);
             box-shadow: 
-                0 0 0 2px rgba(100, 200, 255, 0.2),
-                inset 0 1px 3px rgba(0, 0, 0, 0.2);
-            background: rgba(40, 40, 45, 0.9);
+                0 0 0 2px rgba(100, 180, 255, 0.2),
+                0 0 24px rgba(100, 180, 255, 0.15),
+                inset 0 1px 3px rgba(0, 0, 0, 0.2),
+                inset 0 -1px 0 rgba(100, 180, 255, 0.2);
+            background: linear-gradient(135deg, 
+                rgba(25, 35, 50, 0.9) 0%, 
+                rgba(30, 40, 55, 0.95) 100%);
         }
 
+        /* ===== 水晶宝石按钮 ===== */
         .send-button {
-            padding: 14px 28px;
+            padding: 16px 24px;
             background: linear-gradient(135deg, 
-                rgba(100, 200, 255, 0.15) 0%, 
-                rgba(120, 160, 255, 0.25) 50%, 
-                rgba(100, 200, 255, 0.15) 100%);
-            border: 1px solid rgba(100, 200, 255, 0.5);
-            border-radius: 2px;
-            color: #64c8ff;
+                rgba(100, 180, 255, 0.2) 0%, 
+                rgba(120, 200, 255, 0.15) 50%, 
+                rgba(140, 220, 255, 0.25) 100%);
+            border: 1px solid rgba(100, 180, 255, 0.4);
+            border-radius: 6px;
+            color: #a0d0ff;
             font-size: 13px;
             font-weight: 600;
             font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.2px;
             position: relative;
             overflow: hidden;
+            backdrop-filter: blur(15px);
             box-shadow: 
-                0 2px 8px rgba(100, 200, 255, 0.2),
-                0 0 20px rgba(100, 200, 255, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+                0 4px 16px rgba(100, 180, 255, 0.2),
+                0 0 24px rgba(100, 180, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                inset 0 -1px 0 rgba(100, 180, 255, 0.1);
         }
 
         .send-button::before {
@@ -261,21 +384,36 @@
             height: 100%;
             background: linear-gradient(90deg, 
                 transparent, 
-                rgba(255, 255, 255, 0.2), 
+                rgba(255, 255, 255, 0.25), 
                 transparent);
-            transition: left 0.5s ease;
+            transition: left 0.6s ease;
+        }
+
+        .send-button::after {
+            content: '';
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            right: 1px;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.4), 
+                transparent);
+            border-radius: 6px;
         }
 
         .send-button:hover {
             background: linear-gradient(135deg, 
-                rgba(100, 200, 255, 0.25) 0%, 
-                rgba(120, 160, 255, 0.35) 50%, 
-                rgba(100, 200, 255, 0.25) 100%);
-            border-color: rgba(100, 200, 255, 0.8);
+                rgba(100, 180, 255, 0.3) 0%, 
+                rgba(120, 200, 255, 0.25) 50%, 
+                rgba(140, 220, 255, 0.35) 100%);
+            border-color: rgba(100, 180, 255, 0.7);
             box-shadow: 
-                0 4px 16px rgba(100, 200, 255, 0.4),
-                0 0 30px rgba(100, 200, 255, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+                0 8px 24px rgba(100, 180, 255, 0.4),
+                0 0 36px rgba(100, 180, 255, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25),
+                inset 0 -1px 0 rgba(100, 180, 255, 0.2);
             transform: translateY(-2px);
             color: #ffffff;
         }
@@ -285,31 +423,52 @@
         }
 
         .send-button:active {
-            transform: translateY(-1px);
+            transform: translateY(0);
             box-shadow: 
-                0 2px 12px rgba(100, 200, 255, 0.5),
-                0 0 25px rgba(100, 200, 255, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+                0 4px 16px rgba(100, 180, 255, 0.5),
+                0 0 28px rgba(100, 180, 255, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2),
+                inset 0 -1px 0 rgba(100, 180, 255, 0.15);
         }
 
         .send-button:focus {
             outline: none;
             box-shadow: 
-                0 4px 16px rgba(100, 200, 255, 0.4),
-                0 0 30px rgba(100, 200, 255, 0.3),
-                0 0 0 3px rgba(100, 200, 255, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+                0 8px 24px rgba(100, 180, 255, 0.4),
+                0 0 36px rgba(100, 180, 255, 0.3),
+                0 0 0 3px rgba(100, 180, 255, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.25);
         }
 
-        /* ===== 动画定义 ===== */
-        @keyframes messageSlideIn {
-            from {
+        /* ===== 琉璃凝结动画 ===== */
+        @keyframes crystalizeIn {
+            0% {
                 opacity: 0;
-                transform: translateY(15px);
+                transform: translateY(20px) scale(0.8);
             }
-            to {
+            30% {
+                opacity: 0.3;
+                transform: translateY(10px) scale(0.9);
+            }
+            60% {
+                opacity: 0.7;
+                transform: translateY(-2px) scale(1.02);
+            }
+            100% {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* ===== 光屑效果动画 ===== */
+        @keyframes sparkle {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1);
             }
         }
 
@@ -317,7 +476,7 @@
         @media (max-width: 768px) {
             .dialogue-container {
                 width: 95%;
-                bottom: 20px;
+                bottom: 0;
             }
             
             .chat-area {
@@ -327,24 +486,24 @@
             
             .message-bubble {
                 font-size: 14px;
-                padding: 10px 14px;
+                padding: 12px 16px;
                 max-width: 85%;
             }
             
             .input-area {
-                padding: 16px 18px;
-                gap: 10px;
+                padding: 18px;
+                gap: 12px;
             }
             
             .chat-input {
                 font-size: 14px;
-                padding: 12px 16px;
+                padding: 14px 18px;
             }
             
             .send-button {
-                padding: 12px 20px;
+                padding: 14px 18px;
                 font-size: 12px;
-                letter-spacing: 0.8px;
+                letter-spacing: 1px;
             }
         }
 
@@ -461,12 +620,12 @@
             <div class="chat-area" id="chat-area">
                 <div class="message system">
                     <div class="message-bubble">
-                        欢迎来到意识空间。在这里，你的每一个想法都会影响周围的环境...
+                        欢迎来到琉璃忆境。在这个意识的深层空间中，你的每一个思绪都会凝结成记忆的碎片...
                     </div>
                 </div>
             </div>
             <div class="input-area">
-                <input type="text" class="chat-input" id="chat-input" placeholder="输入你的回应..." />
+                <input type="text" class="chat-input" id="chat-input" placeholder="凝聚你的思绪..." />
                 <button class="send-button" id="send-btn">发送</button>
             </div>
         </div>
@@ -838,8 +997,32 @@
             bubbleDiv.className = 'message-bubble';
             bubbleDiv.textContent = content;
             
+            // 添加琉璃凝结动画的初始状态
+            messageDiv.style.opacity = '0';
+            messageDiv.style.transform = 'translateY(20px) scale(0.8)';
+            
             messageDiv.appendChild(bubbleDiv);
             chatArea.appendChild(messageDiv);
+            
+            // 触发琉璃凝结动画
+            setTimeout(() => {
+                messageDiv.style.opacity = '1';
+                messageDiv.style.transform = 'translateY(0) scale(1)';
+            }, 50);
+            
+            // 添加边缘闪光效果
+            if (Math.random() > 0.7) { // 30% 概率触发特殊闪光
+                setTimeout(() => {
+                    bubbleDiv.style.boxShadow += ', 0 0 15px rgba(' + 
+                        (isUser ? '100, 180, 255' : '180, 120, 200') + ', 0.8)';
+                    
+                    setTimeout(() => {
+                        bubbleDiv.style.boxShadow = bubbleDiv.style.boxShadow.replace(
+                            /, 0 0 15px rgba\([^)]+\)/g, '');
+                    }, 300);
+                }, 200);
+            }
+            
             chatArea.scrollTop = chatArea.scrollHeight;
         }
 
@@ -854,10 +1037,11 @@
                 // 模拟AI回复
                 setTimeout(() => {
                     const responses = [
-                        "你的话语在这个空间中回响，引起了微妙的变化...",
-                        "记忆的碎片开始聚集，似乎在回应你的呼唤。",
-                        "周围的粒子流动变得更加活跃，像是在倾听你的声音。",
-                        "在这个意识的深处，每个想法都有着特殊的意义。"
+                        "你的话语在琉璃碎片中回响，激起了记忆的涟漪...",
+                        "思绪的结晶开始聚集，形成新的意识碎片。",
+                        "在这片忆境中，每个想法都化作闪烁的水晶光芒。",
+                        "琉璃深处传来微妙的共鸣，似乎在回应你的呼唤。",
+                        "记忆的碎片在你的声音中慢慢凝聚，散发着温柔的光辉。"
                     ];
                     const randomResponse = responses[Math.floor(Math.random() * responses.length)];
                     addMessage(randomResponse);
