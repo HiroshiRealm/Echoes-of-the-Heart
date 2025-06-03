@@ -362,11 +362,19 @@ body {
 
 /* Responsive design */
 @media (max-width: 1200px) {
+    body {
+        overflow-y: auto;
+        height: auto;
+        min-height: 100vh;
+    }
+    
     .game-container {
         flex-direction: column;
         align-items: center;
         justify-content: center;
         padding: 2rem;
+        min-height: 100vh;
+        height: auto;
     }
     
     .character-container {
@@ -377,12 +385,14 @@ body {
     
     .character-image {
         height: 50vh;
+        min-height: 300px;
     }
     
     .content-container {
         flex: 0 0 auto;
         height: auto;
         padding: 1rem;
+        padding-bottom: 3rem;
     }
     
     .content-container::after {
@@ -421,8 +431,14 @@ body {
 }
 
 @media (max-width: 768px) {
+    .game-container {
+        padding: 1.5rem;
+        padding-bottom: 3rem;
+    }
+    
     .character-image {
         height: 40vh;
+        min-height: 280px;
     }
     
     .game-title {
@@ -471,6 +487,20 @@ body {
 }
 
 @media (max-width: 480px) {
+    .game-container {
+        padding: 1rem;
+        padding-bottom: 4rem;
+    }
+    
+    .character-image {
+        height: 35vh;
+        min-height: 250px;
+    }
+    
+    .content-container {
+        padding-bottom: 3rem;
+    }
+    
     /* Extra small screens */
     .modal-content {
         margin: 1vh auto;
