@@ -110,11 +110,20 @@ app.post('/chat', async (req, res) => {
         process.env.USER_DATA_DIR = userDataDir;
 
         // Run chat_with_march_seven function
-        const reply = await runPythonScript(
+        const response = await runPythonScript(
             'python/chat_service.py',
             'chat_with_march_seven',
             { user_message: message }
         );
+        
+        // 检查是否有错误
+        if (response.error) {
+            throw new Error(response.error);
+        }
+        
+        // 提取回复内容
+        const reply = response.result || response;
+        
         res.json({ reply });
     } catch (error) {
         console.error('Chat error:', error);

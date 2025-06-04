@@ -125,7 +125,6 @@ def chat_with_march_seven(user_message):
         system_prompt_path = os.path.join(user_data_dir, 'system_prompt.json')
         with open(system_prompt_path, 'r', encoding='utf-8') as f:
             prompt_data = json.load(f)
-            print(prompt_data['system_prompt'])
             system_prompt = prompt_data['system_prompt']
         
         # print("[DEBUG] system_prompt:", system_prompt)
