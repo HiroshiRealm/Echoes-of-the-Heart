@@ -24,15 +24,17 @@ function animateOnLoad() {
     const buttons = document.querySelectorAll('.menu-btn');
     const character = document.querySelector('.character-image');
     
-    // Animate title
-    title.style.opacity = '0';
-    title.style.transform = 'translateY(-50px)';
-    
-    setTimeout(() => {
-        title.style.transition = 'all 1s ease-out';
-        title.style.opacity = '1';
-        title.style.transform = 'translateY(0)';
-    }, 500);
+    // Animate title - 检查元素是否存在
+    if (title) {
+        title.style.opacity = '0';
+        title.style.transform = 'translateY(-50px)';
+        
+        setTimeout(() => {
+            title.style.transition = 'all 1s ease-out';
+            title.style.opacity = '1';
+            title.style.transform = 'translateY(0)';
+        }, 500);
+    }
     
     // Animate buttons with stagger
     buttons.forEach((button, index) => {
@@ -46,15 +48,17 @@ function animateOnLoad() {
         }, 1000 + (index * 200));
     });
     
-    // Animate character
-    character.style.opacity = '0';
-    character.style.transform = 'scale(0.8) translateX(-50px)';
-    
-    setTimeout(() => {
-        character.style.transition = 'all 1.2s ease-out';
-        character.style.opacity = '1';
-        character.style.transform = 'scale(1) translateX(0)';
-    }, 300);
+    // Animate character - 检查元素是否存在
+    if (character) {
+        character.style.opacity = '0';
+        character.style.transform = 'scale(0.8) translateX(-50px)';
+        
+        setTimeout(() => {
+            character.style.transition = 'all 1.2s ease-out';
+            character.style.opacity = '1';
+            character.style.transform = 'scale(1) translateX(0)';
+        }, 300);
+    }
 }
 
 // Audio controls setup
@@ -186,7 +190,7 @@ function startJourney() {
     setTimeout(() => {
         hideLoading();
         // Navigate to the intro-to-dialogue page
-        window.location.href = 'intro-to-dialogue.html';
+        window.location.href = 'pages/intro-to-dialogue.html';
     }, 2000);
 }
 
@@ -602,6 +606,45 @@ class GlobalAudioManager {
             this.backgroundMusic.volume = this.musicVolume;
         }
         this.saveMusicVolume(this.musicVolume);
+    }
+    
+    // 添加缺失的方法
+    setBackgroundVolume(volume) {
+        this.musicVolume = volume;
+        if (this.backgroundMusic) {
+            this.backgroundMusic.volume = this.musicVolume;
+        }
+        this.saveMusicVolume(this.musicVolume);
+    }
+    
+    getBackgroundVolume() {
+        return this.musicVolume;
+    }
+    
+    // 检查背景音乐是否正在播放
+    getBackgroundMusicStatus() {
+        // 检查音频对象是否存在且不是暂停状态
+        return this.backgroundMusic && !this.backgroundMusic.paused && !this.backgroundMusic.ended;
+    }
+    
+    // 兼容性方法，保持向后兼容
+    isBackgroundMusicPlaying() {
+        return this.getBackgroundMusicStatus();
+    }
+    
+    pauseNarration() {
+        if (this.currentNarration && !this.currentNarration.paused) {
+            this.currentNarration.pause();
+            this.isNarrationPlaying = false;
+        }
+    }
+    
+    resumeNarration() {
+        if (this.currentNarration && this.currentNarration.paused) {
+            this.currentNarration.play().catch(error => {
+                console.log('恢复叙述播放失败:', error);
+            });
+        }
     }
     
     // ===== 叙述音频管理 =====

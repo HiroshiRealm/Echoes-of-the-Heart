@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心之回响 - 对话空间</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💎</text></svg>">
+    
+    <!-- 外部CSS文件 -->
+    <link rel="stylesheet" href="../css/dialogue.css">
+    
+    <!-- Three.js库（用于WebGL粒子系统） -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <!-- 背景粒子系统容器 -->
+    <div id="particle-background"></div>
+    
+    <!-- 对话界面主容器 -->
+    <div id="dialogue-screen">
+        <!-- 记忆进度入口 -->
+        <div class="memory-progress-entrance" onclick="window.location.href='./memory-progress.html'">
+            <div class="memory-progress-image"></div>
+            <div class="memory-progress-text">记忆进度</div>
+        </div>
+
+        <!-- 音频控制组件 -->
+        <div class="audio-control">
+            <button id="audioToggle" class="audio-toggle">🔊</button>
+            <div id="volumeControl" class="volume-control">
+                <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="70">
+            </div>
+        </div>
+
+        <!-- 对话容器 -->
+        <div class="dialogue-container">
+            <div id="chat-area" class="chat-area">
+                <!-- 对话消息将在这里动态添加 -->
+            </div>
+            <div class="input-area">
+                <input type="text" id="chat-input" class="chat-input" placeholder="输入你的回应..." maxlength="500">
+                <button id="send-btn" class="send-button">发送</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript文件引入 -->
+    <!-- 全局音频系统 -->
+    <script src="../script.js"></script>
+    
+    <!-- 粒子系统 -->
+    <script src="../js/particles.js"></script>
+    
+    <!-- 对话页面逻辑 -->
+    <script src="../js/dialogue.js"></script>
+</body>
+</html> 

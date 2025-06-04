@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>心之回响 - 记忆拼图</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💎</text></svg>">
+    
+    <!-- 外部CSS文件 -->
+    <link rel="stylesheet" href="../css/memory-progress.css">
+</head>
+<body>
+    <!-- 背景粒子效果 -->
+    <div id="particles"></div>
+
+    <!-- 记忆事件展示层 -->
+    <div class="memory-event-overlay" id="eventOverlay">
+        <img class="memory-event-image" id="eventImage" src="" alt="记忆片段">
+    </div>
+
+    <!-- 返回按钮 -->
+    <a href="../pages/dialogue.html" class="back-button">
+        ←
+    </a>
+
+    <!-- 主容器 -->
+    <div class="memory-container">
+        <!-- 标题区域 -->
+        <div class="memory-header">
+            <h1 class="memory-title">琉璃忆境</h1>
+            <p class="memory-subtitle">收集散落的记忆碎片，重现心之回响</p>
+        </div>
+
+        <!-- 进度区域 -->
+        <div class="progress-section">
+            <div class="progress-label">记忆收集进度</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-count">
+                <span id="progressCount">0</span> / 9
+            </div>
+        </div>
+
+        <!-- 拼图容器 -->
+        <div class="puzzle-container">
+            <div class="puzzle-grid" id="puzzleGrid">
+                <div class="puzzle-piece locked" data-index="0"></div>
+                <div class="puzzle-piece locked" data-index="1"></div>
+                <div class="puzzle-piece locked" data-index="2"></div>
+                <div class="puzzle-piece locked" data-index="3"></div>
+                <div class="puzzle-piece locked" data-index="4"></div>
+                <div class="puzzle-piece locked" data-index="5"></div>
+                <div class="puzzle-piece locked" data-index="6"></div>
+                <div class="puzzle-piece locked" data-index="7"></div>
+                <div class="puzzle-piece locked" data-index="8"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 测试按钮 -->
+    <div class="test-buttons">
+        <button class="test-btn" onclick="unlockNextMemory()">解锁下一个</button>
+        <button class="test-btn" onclick="resetProgress()">重置进度</button>
+        <button class="test-btn" onclick="unlockAll()">解锁全部</button>
+    </div>
+
+    <!-- JavaScript文件引入 -->
+    <!-- 全局音频系统 -->
+    <script src="../script.js"></script>
+    
+    <!-- 记忆进度逻辑 -->
+    <script src="../js/memory-progress.js"></script>
+</body>
+</html> 
