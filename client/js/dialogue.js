@@ -255,24 +255,58 @@ class DialogueManager {
                 
                 // 如果有新的记忆点被触发
                 if (memoryData.memoryPoints && memoryData.memoryPoints.length > 0) {
-                    // 延迟显示记忆解锁消息
-                    setTimeout(() => {
-                        const memoryCount = memoryData.memoryPoints.length;
-                        this.addMessage(`🌟 你的话语触发了 ${memoryCount} 个记忆碎片的共鸣！记忆碎片已添加到你的记忆拼图中...`, false);
-                        
-                        // 如果有记忆拼图API，可以在这里调用
-                        if (window.MemoryPuzzleAPI) {
-                            memoryData.memoryPoints.forEach(memoryPoint => {
-                                // 这里可以根据实际的记忆点数据结构来解锁记忆
-                                console.log('解锁记忆点:', memoryPoint);
+                    const triggeredMemories = memoryData.memoryPoints.filter(point => point.isTriggered);
+                    
+                    if (triggeredMemories.length > 0) {
+                        // 延迟显示记忆解锁消息
+                        setTimeout(() => {
+                            const memoryCount = triggeredMemories.length;
+                            this.addMessage(`🌟 你的话语触发了 ${memoryCount} 个记忆碎片的共鸣！`, false);
+                            
+                            // 显示触发的记忆标题
+                            triggeredMemories.forEach(memory => {
+                                this.addMessage(`✨ 解锁记忆：「${memory.title}」`, false);
                             });
-                        }
-                    }, 1500);
+                            
+                            this.addMessage('📷 记忆碎片已添加到你的记忆拼图中，可以在左上角查看进度！', false);
+                            
+                            // 更新记忆进度页面的计数器（如果存在的话）
+                            this.updateMemoryProgressNotification(triggeredMemories.length);
+                            
+                        }, 1500);
+                    }
                 }
             }
         } catch (error) {
             console.warn('记忆点检查失败:', error);
             // 记忆点检查失败不影响正常对话，只是记录警告
+        }
+    }
+
+    // 更新记忆进度通知
+    updateMemoryProgressNotification(newMemoryCount) {
+        const memoryEntrance = document.querySelector('.memory-progress-entrance');
+        if (memoryEntrance) {
+            // 添加闪烁效果提示有新记忆
+            memoryEntrance.classList.add('has-new-memory');
+            
+            // 创建通知数字
+            let notification = memoryEntrance.querySelector('.memory-notification');
+            if (!notification) {
+                notification = document.createElement('div');
+                notification.className = 'memory-notification';
+                memoryEntrance.appendChild(notification);
+            }
+            
+            // 更新通知数字
+            const currentCount = parseInt(notification.textContent || '0');
+            notification.textContent = currentCount + newMemoryCount;
+            notification.style.display = 'block';
+            
+            // 5秒后移除闪烁效果，但保留通知数字
+            setTimeout(() => {
+                memoryEntrance.classList.remove('has-new-memory');
+            }, 5000);
         }
     }
 

@@ -6,6 +6,9 @@ class MemoryPuzzleManager {
         this.isAnimating = false;
         this.particleSystem = null;
         
+        // API配置
+        this.apiBaseUrl = 'http://localhost:3000';
+        
         // DOM元素
         this.eventOverlay = null;
         this.eventImage = null;
@@ -17,7 +20,7 @@ class MemoryPuzzleManager {
         this.init();
     }
 
-    init() {
+    async init() {
         // 获取DOM元素
         this.eventOverlay = document.getElementById('eventOverlay');
         this.eventImage = document.getElementById('eventImage');
@@ -39,11 +42,65 @@ class MemoryPuzzleManager {
         // 创建背景粒子效果
         this.createParticles();
         
-        // 加载保存的进度
-        this.loadProgress();
+        // 从后端加载真实的记忆状态
+        await this.loadMemoriesFromServer();
         
         // 初始化拼图显示
         this.updatePuzzleDisplay();
+        
+        // 清除记忆进度通知（用户已查看）
+        this.clearMemoryNotification();
+    }
+
+    // 从服务器加载记忆状态
+    async loadMemoriesFromServer() {
+        try {
+            const response = await fetch(`${this.apiBaseUrl}/memories`);
+            if (response.ok) {
+                const data = await response.json();
+                console.log('加载的记忆状态:', data);
+                
+                // 更新解锁状态
+                this.unlockedMemories = new Array(9).fill(false);
+                this.currentProgress = 0;
+                
+                data.memories.forEach(memory => {
+                    if (memory.isUnlocked && memory.id >= 1 && memory.id <= 9) {
+                        this.unlockedMemories[memory.id - 1] = true;
+                        this.currentProgress++;
+                    }
+                });
+                
+                console.log('解锁状态:', this.unlockedMemories);
+                console.log('当前进度:', this.currentProgress);
+                
+                // 不需要保存到localStorage，因为数据来自服务器
+                this.updateProgress();
+                return true;
+            } else {
+                console.warn('无法加载记忆状态，使用本地保存的状态');
+                this.loadProgress(); // 降级到本地存储
+                return false;
+            }
+        } catch (error) {
+            console.error('加载记忆状态失败:', error);
+            this.loadProgress(); // 降级到本地存储
+            return false;
+        }
+    }
+
+    // 清除记忆进度通知
+    clearMemoryNotification() {
+        // 如果是从对话页面跳转过来的，清除通知
+        const memoryEntrance = document.querySelector('.memory-progress-entrance');
+        if (memoryEntrance) {
+            const notification = memoryEntrance.querySelector('.memory-notification');
+            if (notification) {
+                notification.style.display = 'none';
+                notification.textContent = '0';
+            }
+            memoryEntrance.classList.remove('has-new-memory');
+        }
     }
 
     // 创建统一的背景粒子效果
@@ -349,8 +406,9 @@ class MemoryPuzzleManager {
 // ===== 页面初始化 =====
 let memoryPuzzle;
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     memoryPuzzle = new MemoryPuzzleManager();
+    // 不需要等待init()，因为构造函数中已经调用了init()
 });
 
 // ===== 测试函数 =====

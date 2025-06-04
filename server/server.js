@@ -190,6 +190,55 @@ app.post('/clear', async (req, res) => {
     }
 });
 
+// Get memories endpoint
+app.get('/memories', async (req, res) => {
+    try {
+        const userIP = getRealIP(req);
+        console.log(`Get memories request from IP: ${userIP}`);
+        
+        // Set environment variable for user data directory
+        const userDataDir = getUserDataDir(userIP);
+        process.env.USER_DATA_DIR = userDataDir;
+
+        // Check if system prompt file exists
+        const systemPromptPath = path.join(userDataDir, 'system_prompt.json');
+        if (!fs.existsSync(systemPromptPath)) {
+            // No memories yet
+            return res.json({ memories: [], unlockedCount: 0 });
+        }
+
+        // Read the system prompt file to get memories
+        const systemPromptData = JSON.parse(fs.readFileSync(systemPromptPath, 'utf8'));
+        const memories = systemPromptData.memories || [];
+        
+        // Get all memory points from Python service
+        const allMemoryPoints = await runPythonScript(
+            'python/memory_service.py',
+            'get_all_memory_points',
+            {}
+        );
+
+        // Create result with unlock status
+        const memoryStatus = (allMemoryPoints.result || []).map(point => ({
+            id: point.id,
+            title: point.title,
+            content: point.content,
+            isUnlocked: memories.some(m => m.id === point.id)
+        }));
+
+        const unlockedCount = memoryStatus.filter(m => m.isUnlocked).length;
+
+        res.json({ 
+            memories: memoryStatus,
+            unlockedCount: unlockedCount,
+            totalCount: memoryStatus.length
+        });
+    } catch (error) {
+        console.error('Get memories error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // Start the server
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
