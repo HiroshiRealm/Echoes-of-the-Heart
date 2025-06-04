@@ -3,6 +3,8 @@ import json
 import sys
 import asyncio
 import os
+import time
+import random
 
 # 预设记忆点
 PRESET_MEMORY_POINTS = [
@@ -79,8 +81,13 @@ async def check_memory_point_trigger(memory_point, current_dialogue, chat_histor
     # 将聊天历史转换为字符串
     chat_history_text = " ".join([msg["content"] for msg in chat_history])
     
+    # 添加时间戳和随机数来防止 API 记忆
+    timestamp = int(time.time())
+    random_num = random.randint(1000, 9999)
+    
     prompt = f"""
 请分析以下对话内容，判断是否满足记忆点"{memory_point['title']}"的触发条件。
+时间戳：{timestamp}-{random_num}
 
 记忆点描述：{memory_point['content']}
 触发条件：{memory_point['triggerCondition']}
@@ -102,7 +109,7 @@ async def check_memory_point_trigger(memory_point, current_dialogue, chat_histor
         "messages": [
             {
                 "role": "system",
-                "content": "你是一个专门用于判断游戏记忆点是否触发的助手。你只需要回答'是'或'否'。"
+                "content": f"你是一个专门用于判断游戏记忆点是否触发的助手。你只需要回答'是'或'否'。当前时间戳：{timestamp}-{random_num}"
             },
             {
                 "role": "user",
@@ -115,7 +122,7 @@ async def check_memory_point_trigger(memory_point, current_dialogue, chat_histor
     }
 
     try:
-        # 使用 aiohttp 发送异步请求
+        # 每次调用都创建新的 session
         async with aiohttp.ClientSession() as session:
             async with session.post(API_URL, headers=headers, json=data) as response:
                 response.raise_for_status()
@@ -146,13 +153,23 @@ async def check_all_memory_points(current_dialogue):
     except FileNotFoundError:
         chat_history = []
     
+    # 创建所有记忆点的检查任务
+    tasks = [
+        check_memory_point_trigger(point, current_dialogue, chat_history)
+        for point in PRESET_MEMORY_POINTS
+    ]
+    
+    # 并发执行所有任务
+    triggered_results = await asyncio.gather(*tasks)
+    
+    # 组合结果
     results = []
-    for point in PRESET_MEMORY_POINTS:
-        is_triggered = await check_memory_point_trigger(point, current_dialogue, chat_history)
+    for point, is_triggered in zip(PRESET_MEMORY_POINTS, triggered_results):
         results.append({
             **point,
             "isTriggered": is_triggered
         })
+    
     return results
 
 def get_all_memory_points():
