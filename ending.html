@@ -428,13 +428,21 @@
         </div>
     </div>
 
+    <!-- 全局音频系统 -->
+    <script src="script.js"></script>
     <script>
         // 按钮交互逻辑
         document.addEventListener('DOMContentLoaded', function() {
+            // 初始化结局音效
+            GlobalAudio.initNarration('assets/audio/MoppySound.mp3', true);
+            
             const menuBtn = document.getElementById('menu-btn');
 
             // 返回主菜单按钮
             menuBtn.addEventListener('click', function() {
+                // 停止结局音效
+                GlobalAudio.stopNarration();
+                
                 // 添加淡出效果
                 document.body.style.transition = 'opacity 1s ease-out';
                 document.body.style.opacity = '0';
