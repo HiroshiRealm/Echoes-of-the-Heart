@@ -1074,6 +1074,9 @@
             GlobalAudio.initBackgroundMusic('assets/audio/Brian Eno - An Ending (Ascent).mp3');
             AudioUI.init();
             
+            // 启动UI状态更新循环
+            AudioUI.startUIUpdateLoop();
+            
             // 立即初始化粒子系统
             initParticleSystem();
             

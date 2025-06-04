@@ -522,6 +522,22 @@ class GlobalAudioManager {
             }
         });
         
+        this.backgroundMusic.addEventListener('play', () => {
+            this.isBackgroundMusicPlaying = true;
+            this.saveMusicPlayingState(true);
+            if (window.AudioUI) {
+                window.AudioUI.updateIcon();
+            }
+        });
+        
+        this.backgroundMusic.addEventListener('pause', () => {
+            this.isBackgroundMusicPlaying = false;
+            this.saveMusicPlayingState(false);
+            if (window.AudioUI) {
+                window.AudioUI.updateIcon();
+            }
+        });
+        
         this.backgroundMusic.addEventListener('error', (e) => {
             console.error('背景音乐加载失败:', e);
         });
@@ -542,9 +558,20 @@ class GlobalAudioManager {
             this.isBackgroundMusicPlaying = true;
             this.saveMusicPlayingState(true);
             console.log('背景音乐开始播放');
+            
+            // 通知UI更新
+            if (window.AudioUI) {
+                window.AudioUI.updateIcon();
+            }
         } catch (error) {
             console.log('背景音乐自动播放被阻止:', error);
             this.isBackgroundMusicPlaying = false;
+            this.saveMusicPlayingState(false);
+            
+            // 通知UI更新
+            if (window.AudioUI) {
+                window.AudioUI.updateIcon();
+            }
         }
     }
     
@@ -553,6 +580,11 @@ class GlobalAudioManager {
             this.backgroundMusic.pause();
             this.isBackgroundMusicPlaying = false;
             this.saveMusicPlayingState(false);
+            
+            // 通知UI更新
+            if (window.AudioUI) {
+                window.AudioUI.updateIcon();
+            }
         }
     }
     
@@ -789,6 +821,14 @@ class AudioUIController {
         if (this.volumeText) {
             this.volumeText.textContent = Math.round(volume) + '%';
         }
+    }
+    
+    // 添加定期更新UI的方法
+    startUIUpdateLoop() {
+        // 每500ms更新一次UI状态
+        setInterval(() => {
+            this.updateIcon();
+        }, 500);
     }
 }
 
