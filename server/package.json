@@ -1,0 +1,19 @@
+{
+  "name": "echoes-of-heart-server",
+  "version": "1.0.0",
+  "description": "Backend server for Echoes of Heart AI narrative game",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": ["ai", "chat", "game", "narrative"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+} 

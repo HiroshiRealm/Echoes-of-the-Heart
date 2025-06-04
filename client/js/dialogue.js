@@ -4,7 +4,11 @@ class DialogueManager {
         this.chatArea = null;
         this.chatInput = null;
         this.sendButton = null;
+        this.clearChatBtn = null;
         this.particleSystem = null;
+        
+        // API配置
+        this.apiBaseUrl = 'http://localhost:3000';
         
         this.init();
     }
@@ -14,6 +18,7 @@ class DialogueManager {
         this.chatArea = document.getElementById('chat-area');
         this.chatInput = document.getElementById('chat-input');
         this.sendButton = document.getElementById('send-btn');
+        this.clearChatBtn = document.getElementById('clearChatBtn');
 
         // 绑定事件
         this.bindEvents();
@@ -41,6 +46,13 @@ class DialogueManager {
         this.sendButton.addEventListener('click', () => {
             this.handleUserInput();
         });
+
+        // 清空聊天历史按钮
+        if (this.clearChatBtn) {
+            this.clearChatBtn.addEventListener('click', () => {
+                this.confirmAndClearChat();
+            });
+        }
 
         // 窗口大小调整
         window.addEventListener('resize', () => {
@@ -151,7 +163,7 @@ class DialogueManager {
     }
 
     // 处理用户输入
-    handleUserInput() {
+    async handleUserInput() {
         const message = this.chatInput.value.trim();
         
         if (message) {
@@ -159,49 +171,167 @@ class DialogueManager {
             this.addMessage(message, true);
             this.chatInput.value = '';
             
-            // 模拟AI回复
-            this.generateAIResponse(message);
+            // 禁用输入框和发送按钮，防止重复发送
+            this.chatInput.disabled = true;
+            this.sendButton.disabled = true;
+            this.sendButton.textContent = '发送中...';
+            
+            try {
+                // 调用真实的AI回复
+                await this.generateAIResponse(message);
+            } catch (error) {
+                console.error('生成AI回复时出错:', error);
+                this.addMessage('抱歉，我现在无法回应你的话语。请稍后再试...', false);
+            } finally {
+                // 重新启用输入框和发送按钮
+                this.chatInput.disabled = false;
+                this.sendButton.disabled = false;
+                this.sendButton.textContent = '发送';
+                this.chatInput.focus();
+            }
         }
     }
 
-    // 生成AI回复
-    generateAIResponse(userMessage) {
-        const responses = [
-            "你的话语在琉璃碎片中回响，激起了记忆的涟漪...",
-            "思绪的结晶开始聚集，形成新的意识碎片。",
-            "在这片忆境中，每个想法都化作闪烁的水晶光芒。",
-            "琉璃深处传来微妙的共鸣，似乎在回应你的呼唤。",
-            "记忆的碎片在你的声音中慢慢凝聚，散发着温柔的光辉。",
-            "你的内心深处有什么在轻轻颤动，那是被唤醒的记忆吗？",
-            "这些话语如同琉璃中的气泡，缓缓上升，带着深深的共鸣。",
-            "在这个空间里，每一份真诚都会被倾听和理解。"
-        ];
-        
-        // 根据用户输入进行简单的情感分析来选择回复
-        let responseIndex;
-        if (userMessage.includes('记忆') || userMessage.includes('回忆')) {
-            responseIndex = Math.floor(Math.random() * 3); // 前3个回复更适合记忆相关
-        } else if (userMessage.includes('心') || userMessage.includes('感觉') || userMessage.includes('情绪')) {
-            responseIndex = 3 + Math.floor(Math.random() * 3); // 中间3个回复
-        } else {
-            responseIndex = 6 + Math.floor(Math.random() * 2); // 最后2个通用回复
-        }
-        
-        const selectedResponse = responses[responseIndex];
-        
-        // 延迟回复，模拟思考时间
-        setTimeout(() => {
-            this.addMessage(selectedResponse);
+    // 生成AI回复 - 调用后端API
+    async generateAIResponse(userMessage) {
+        try {
+            // 显示typing指示器
+            this.showTypingIndicator();
             
-            // 有时候解锁记忆（测试功能）
-            if (Math.random() > 0.8 && window.MemoryPuzzleAPI) {
-                setTimeout(() => {
-                    this.addMessage("一片记忆碎片突然闪现，被添加到了你的记忆拼图中...");
-                    // 这里可以调用解锁记忆的API
-                    // MemoryPuzzleAPI.unlockMemory(Math.floor(Math.random() * 9));
-                }, 1000);
+            // 首先调用memory接口检查记忆点
+            await this.checkMemoryPoints(userMessage);
+            
+            // 然后调用chat接口获取AI回复
+            const chatResponse = await fetch(`${this.apiBaseUrl}/chat`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: userMessage
+                })
+            });
+
+            if (!chatResponse.ok) {
+                throw new Error(`HTTP error! status: ${chatResponse.status}`);
             }
-        }, 1000 + Math.random() * 2000);
+
+            const chatData = await chatResponse.json();
+            
+            // 隐藏typing指示器
+            this.hideTypingIndicator();
+            
+            // 添加AI回复
+            if (chatData.reply) {
+                this.addMessage(chatData.reply, false);
+            } else {
+                throw new Error('AI回复为空');
+            }
+
+        } catch (error) {
+            console.error('AI回复生成失败:', error);
+            this.hideTypingIndicator();
+            
+            // 显示友好的错误消息
+            this.addMessage('网络连接似乎有些不稳定，请检查服务器是否正在运行...', false);
+        }
+    }
+
+    // 检查记忆点
+    async checkMemoryPoints(userMessage) {
+        try {
+            const memoryResponse = await fetch(`${this.apiBaseUrl}/memory`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    current_dialogue: userMessage
+                })
+            });
+
+            if (memoryResponse.ok) {
+                const memoryData = await memoryResponse.json();
+                
+                // 如果有新的记忆点被触发
+                if (memoryData.memoryPoints && memoryData.memoryPoints.length > 0) {
+                    // 延迟显示记忆解锁消息
+                    setTimeout(() => {
+                        const memoryCount = memoryData.memoryPoints.length;
+                        this.addMessage(`🌟 你的话语触发了 ${memoryCount} 个记忆碎片的共鸣！记忆碎片已添加到你的记忆拼图中...`, false);
+                        
+                        // 如果有记忆拼图API，可以在这里调用
+                        if (window.MemoryPuzzleAPI) {
+                            memoryData.memoryPoints.forEach(memoryPoint => {
+                                // 这里可以根据实际的记忆点数据结构来解锁记忆
+                                console.log('解锁记忆点:', memoryPoint);
+                            });
+                        }
+                    }, 1500);
+                }
+            }
+        } catch (error) {
+            console.warn('记忆点检查失败:', error);
+            // 记忆点检查失败不影响正常对话，只是记录警告
+        }
+    }
+
+    // 显示typing指示器
+    showTypingIndicator() {
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'message system typing-indicator';
+        typingDiv.id = 'typing-indicator';
+        
+        const bubbleDiv = document.createElement('div');
+        bubbleDiv.className = 'message-bubble';
+        bubbleDiv.innerHTML = '<span class="typing-dots"><span>.</span><span>.</span><span>.</span></span>';
+        
+        typingDiv.appendChild(bubbleDiv);
+        this.chatArea.appendChild(typingDiv);
+        
+        // 滚动到底部
+        this.chatArea.scrollTop = this.chatArea.scrollHeight;
+    }
+
+    // 隐藏typing指示器
+    hideTypingIndicator() {
+        const typingIndicator = document.getElementById('typing-indicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+    }
+
+    // 清空聊天历史
+    async clearChatHistory() {
+        try {
+            const response = await fetch(`${this.apiBaseUrl}/clear`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (response.ok) {
+                // 清空前端显示
+                this.chatArea.innerHTML = '';
+                // 重新添加欢迎消息
+                this.addWelcomeMessage();
+                this.addMessage('记忆和聊天历史已被清空。', false);
+            } else {
+                throw new Error('清空失败');
+            }
+        } catch (error) {
+            console.error('清空聊天历史失败:', error);
+            this.addMessage('清空操作失败，请稍后重试。', false);
+        }
+    }
+
+    // 确认并清空聊天历史
+    confirmAndClearChat() {
+        // 简单的确认对话框
+        if (confirm('确定要清空所有聊天历史和记忆吗？此操作无法撤销。')) {
+            this.clearChatHistory();
+        }
     }
 
     // ===== 页面跳转 =====
