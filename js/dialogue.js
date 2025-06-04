@@ -78,6 +78,13 @@ class DialogueManager {
             // 初始化全局音频系统
             window.GlobalAudio.initBackgroundMusic('../assets/audio/Brian Eno - An Ending (Ascent).mp3');
             
+            // 立即尝试播放背景音乐
+            setTimeout(() => {
+                if (window.GlobalAudio && !window.GlobalAudio.isBackgroundMusicPlaying()) {
+                    window.GlobalAudio.playBackgroundMusic();
+                }
+            }, 200);
+            
             // 初始化音频UI控制器
             if (window.AudioUI) {
                 window.AudioUI.init();

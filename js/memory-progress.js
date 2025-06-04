@@ -29,7 +29,14 @@ class MemoryPuzzleManager {
         // 初始化全局音频系统（继续播放背景音乐）
         window.GlobalAudio.initBackgroundMusic('../assets/audio/Brian Eno - An Ending (Ascent).mp3');
         
-        // 创建统一粒子系统
+        // 额外尝试确保背景音乐播放
+        setTimeout(() => {
+            if (window.GlobalAudio && !window.GlobalAudio.isBackgroundMusicPlaying()) {
+                window.GlobalAudio.playBackgroundMusic();
+            }
+        }, 300);
+        
+        // 创建背景粒子效果
         this.createParticles();
         
         // 加载保存的进度

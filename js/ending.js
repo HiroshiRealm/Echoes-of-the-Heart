@@ -13,6 +13,13 @@ class EndingManager {
         // 初始化结局音效（修正路径）
         if (window.GlobalAudio) {
             window.GlobalAudio.initNarration('../assets/audio/MoppySound.mp3', true);
+            
+            // 额外尝试确保播放
+            setTimeout(() => {
+                if (window.GlobalAudio && !window.GlobalAudio.isNarrationPlaying) {
+                    window.GlobalAudio.playNarration();
+                }
+            }, 300);
         }
         
         // 获取按钮元素

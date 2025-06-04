@@ -12,10 +12,20 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add keyboard navigation
     setupKeyboardNavigation();
     
-    // Try to start music (may be blocked by browser policy)
-    setTimeout(() => {
+    // 立即尝试启动音频（不等待延时）
+    tryPlayMusic();
+    
+    // 添加用户交互监听器以确保音频播放
+    const enableAudioOnInteraction = () => {
         tryPlayMusic();
-    }, 1000);
+        document.removeEventListener('click', enableAudioOnInteraction);
+        document.removeEventListener('keydown', enableAudioOnInteraction);
+        document.removeEventListener('touchstart', enableAudioOnInteraction);
+    };
+    
+    document.addEventListener('click', enableAudioOnInteraction);
+    document.addEventListener('keydown', enableAudioOnInteraction);
+    document.addEventListener('touchstart', enableAudioOnInteraction);
 });
 
 // Animate elements on page load
@@ -509,6 +519,7 @@ class GlobalAudioManager {
         this.backgroundMusic = new Audio(audioPath);
         this.backgroundMusic.loop = true;
         this.backgroundMusic.volume = this.musicVolume;
+        this.backgroundMusic.preload = 'auto'; // 预加载音频
         
         // 事件监听器
         this.backgroundMusic.addEventListener('loadeddata', () => {
@@ -520,8 +531,14 @@ class GlobalAudioManager {
                 this.backgroundMusic.currentTime = savedTime;
             }
             
-            // 如果之前在播放，继续播放
-            if (this.getSavedMusicPlayingState()) {
+            // 立即尝试自动播放
+            this.playBackgroundMusic();
+        });
+
+        this.backgroundMusic.addEventListener('canplaythrough', () => {
+            console.log('背景音乐可以播放');
+            // 确保音频可以播放时立即开始
+            if (!this.isBackgroundMusicPlaying) {
                 this.playBackgroundMusic();
             }
         });
@@ -529,6 +546,7 @@ class GlobalAudioManager {
         this.backgroundMusic.addEventListener('play', () => {
             this.isBackgroundMusicPlaying = true;
             this.saveMusicPlayingState(true);
+            console.log('背景音乐开始播放');
             if (window.AudioUI) {
                 window.AudioUI.updateIcon();
             }
@@ -552,30 +570,45 @@ class GlobalAudioManager {
                 this.saveMusicTime(this.backgroundMusic.currentTime);
             }
         });
+
+        // 立即加载音频
+        this.backgroundMusic.load();
     }
     
     async playBackgroundMusic() {
         if (!this.backgroundMusic) return;
         
-        try {
-            await this.backgroundMusic.play();
-            this.isBackgroundMusicPlaying = true;
-            this.saveMusicPlayingState(true);
-            console.log('背景音乐开始播放');
-            
-            // 通知UI更新
-            if (window.AudioUI) {
-                window.AudioUI.updateIcon();
+        const playAction = async () => {
+            try {
+                // 设置音量
+                this.backgroundMusic.volume = this.musicVolume;
+                
+                await this.backgroundMusic.play();
+                this.isBackgroundMusicPlaying = true;
+                this.saveMusicPlayingState(true);
+                console.log('背景音乐开始播放');
+                
+                // 通知UI更新
+                if (window.AudioUI) {
+                    window.AudioUI.updateIcon();
+                }
+            } catch (error) {
+                console.log('背景音乐播放失败:', error);
+                this.isBackgroundMusicPlaying = false;
+                this.saveMusicPlayingState(false);
+                
+                if (window.AudioUI) {
+                    window.AudioUI.updateIcon();
+                }
             }
-        } catch (error) {
-            console.log('背景音乐自动播放被阻止:', error);
-            this.isBackgroundMusicPlaying = false;
-            this.saveMusicPlayingState(false);
-            
-            // 通知UI更新
-            if (window.AudioUI) {
-                window.AudioUI.updateIcon();
-            }
+        };
+
+        // 使用智能音频启动管理器
+        if (window.SmartAudioStarter) {
+            window.SmartAudioStarter.addPendingAction(playAction);
+        } else {
+            // 后备方案
+            playAction();
         }
     }
     
@@ -655,10 +688,19 @@ class GlobalAudioManager {
         }
         
         this.currentNarration = new Audio(audioPath);
+        this.currentNarration.preload = 'auto'; // 预加载音频
         
         this.currentNarration.addEventListener('loadeddata', () => {
             console.log('叙述音频加载完成');
             if (autoPlay) {
+                // 立即尝试播放
+                this.playNarration();
+            }
+        });
+
+        this.currentNarration.addEventListener('canplaythrough', () => {
+            console.log('叙述音频可以播放');
+            if (autoPlay && !this.isNarrationPlaying) {
                 this.playNarration();
             }
         });
@@ -671,38 +713,42 @@ class GlobalAudioManager {
             console.log('叙述播放完成');
             this.isNarrationPlaying = false;
         });
+
+        this.currentNarration.addEventListener('play', () => {
+            this.isNarrationPlaying = true;
+            console.log('叙述开始播放');
+        });
+
+        this.currentNarration.addEventListener('pause', () => {
+            this.isNarrationPlaying = false;
+            console.log('叙述暂停播放');
+        });
+
+        // 立即加载音频
+        this.currentNarration.load();
     }
     
     async playNarration() {
         if (!this.currentNarration) return;
         
-        try {
-            await this.currentNarration.play();
-            this.isNarrationPlaying = true;
-            console.log('叙述开始播放');
-        } catch (error) {
-            console.log('叙述自动播放被阻止，等待用户交互');
-            this.setupNarrationUserInteraction();
-        }
-    }
-    
-    setupNarrationUserInteraction() {
-        const playOnInteraction = async () => {
-            if (this.currentNarration) {
-                try {
-                    await this.currentNarration.play();
-                    this.isNarrationPlaying = true;
-                    console.log('用户交互后开始播放叙述');
-                    document.removeEventListener('click', playOnInteraction);
-                    document.removeEventListener('keydown', playOnInteraction);
-                } catch (e) {
-                    console.error('叙述播放失败:', e);
-                }
+        const playAction = async () => {
+            try {
+                await this.currentNarration.play();
+                this.isNarrationPlaying = true;
+                console.log('叙述开始播放');
+            } catch (error) {
+                console.log('叙述播放失败:', error);
+                this.isNarrationPlaying = false;
             }
         };
-        
-        document.addEventListener('click', playOnInteraction);
-        document.addEventListener('keydown', playOnInteraction);
+
+        // 使用智能音频启动管理器
+        if (window.SmartAudioStarter) {
+            window.SmartAudioStarter.addPendingAction(playAction);
+        } else {
+            // 后备方案
+            playAction();
+        }
     }
     
     stopNarration() {
@@ -876,4 +922,77 @@ class AudioUIController {
 }
 
 // ===== 全局UI控制器实例 =====
-window.AudioUI = new AudioUIController(window.GlobalAudio); 
+window.AudioUI = new AudioUIController(window.GlobalAudio);
+
+// ===== 智能音频启动管理器 =====
+class SmartAudioStarter {
+    constructor() {
+        //this.hasUserInteracted = false;
+        this.hasUserInteracted = false; 
+        this.pendingAudioActions = [];
+        this.init();
+    }
+
+    init() {
+        // 监听各种用户交互事件
+        const events = ['click', 'keydown', 'touchstart', 'mousedown'];
+        
+        const handleFirstInteraction = () => {
+            if (!this.hasUserInteracted) {
+                this.hasUserInteracted = true;
+                console.log('🎵 检测到用户交互，启动音频系统');
+                
+                // 执行所有待处理的音频操作
+                this.processPendingAudioActions();
+                
+                // 移除事件监听器
+                events.forEach(event => {
+                    document.removeEventListener(event, handleFirstInteraction, true);
+                });
+            }
+        };
+
+        // 添加事件监听器（使用捕获阶段确保尽早触发）
+        events.forEach(event => {
+            document.addEventListener(event, handleFirstInteraction, true);
+        });
+
+        // 页面可见性变化也可能是交互的信号
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden && !this.hasUserInteracted) {
+                setTimeout(() => handleFirstInteraction(), 100);
+            }
+        });
+    }
+
+    // 添加待处理的音频操作
+    addPendingAction(action) {
+        if (this.hasUserInteracted) {
+            // 如果已经有用户交互，立即执行
+            action();
+        } else {
+            // 否则添加到待处理队列
+            this.pendingAudioActions.push(action);
+        }
+    }
+
+    // 处理所有待处理的音频操作
+    processPendingAudioActions() {
+        while (this.pendingAudioActions.length > 0) {
+            const action = this.pendingAudioActions.shift();
+            try {
+                action();
+            } catch (error) {
+                console.error('执行音频操作失败:', error);
+            }
+        }
+    }
+
+    // 检查是否可以播放音频
+    canPlayAudio() {
+        return this.hasUserInteracted;
+    }
+}
+
+// 创建全局音频启动管理器
+window.SmartAudioStarter = new SmartAudioStarter(); 

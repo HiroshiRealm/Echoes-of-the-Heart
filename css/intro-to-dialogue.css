@@ -1,0 +1,221 @@
+/* ===== 介绍页面样式 ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', 'Microsoft YaHei', sans-serif;
+    background-image: url('../assets/images/background2.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #ffffff;
+    overflow: hidden;
+    height: 100vh;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+}
+
+/* ===== 开场介绍界面 ===== */
+#intro-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    z-index: 2;
+    opacity: 1;
+    transition: all 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#intro-screen.fade-out {
+    opacity: 0;
+    transform: translateY(-50px);
+    pointer-events: none;
+}
+
+.intro-left {
+    width: 70%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.intro-image {
+    width: 80%;
+    aspect-ratio: 4/3;
+    background-image: url('../assets/images/intro-March7th.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 20px;
+    opacity: 0;
+    transform: translateX(-50px) scale(0.9);
+    animation: slideInLeft 2s ease-out 0.5s forwards;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.4),
+        0 10px 30px rgba(100, 200, 255, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(100, 200, 255, 0.3);
+}
+
+.intro-right {
+    width: 30%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 2rem;
+    position: relative;
+}
+
+.intro-text {
+    width: 100%;
+    text-align: left;
+    line-height: 1.8;
+    font-size: 16px;
+    color: #e2e8f0;
+}
+
+.text-line {
+    opacity: 0;
+    transform: translateX(30px);
+    margin-bottom: 12px;
+    animation-fill-mode: forwards;
+}
+
+.text-highlight {
+    color: #8b3a3a;
+    text-shadow: 0 0 8px rgba(139, 58, 58, 0.6);
+    font-weight: 500;
+}
+
+.text-emphasis {
+    color: #64c8ff;
+    text-shadow: 0 0 10px rgba(100, 200, 255, 0.8);
+    font-weight: 500;
+}
+
+.continue-button {
+    margin-top: 30px;
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #1a365d, #2d5a87);
+    border: 2px solid rgba(100, 200, 255, 0.3);
+    border-radius: 25px;
+    color: #e2e8f0;
+    font-size: 14px;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateX(30px);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    align-self: flex-start;
+}
+
+.continue-button:hover {
+    background: linear-gradient(135deg, #2d5a87, #3182ce);
+    border-color: rgba(100, 200, 255, 0.6);
+    box-shadow: 0 0 20px rgba(100, 200, 255, 0.3);
+}
+
+.continue-button.show {
+    animation: slideInRight 1s ease-out forwards;
+}
+
+/* ===== 动画定义 ===== */
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes slideInRight {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes textReveal {
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ===== 响应式设计 ===== */
+@media (max-width: 768px) {
+    #intro-screen {
+        flex-direction: column;
+    }
+    
+    .intro-left {
+        width: 100%;
+        height: 60%;
+    }
+    
+    .intro-image {
+        width: 70%;
+        aspect-ratio: 4/3;
+        border-radius: 15px;
+    }
+    
+    .intro-right {
+        width: 100%;
+        height: 40%;
+        padding: 1rem;
+        justify-content: flex-start;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .intro-text {
+        text-align: center;
+        font-size: 14px;
+    }
+    
+    .text-line {
+        transform: translateY(20px);
+    }
+    
+    .continue-button {
+        transform: translateY(20px);
+        align-self: center;
+    }
+    
+    @keyframes textReveal {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .continue-button.show {
+        animation: fadeInUp 1s ease-out forwards;
+    }
+} 
