@@ -693,12 +693,6 @@
     </style>
 </head>
 <body>
-    <!-- 背景音乐 -->
-    <audio id="background-music" loop preload="auto">
-        <source src="assets/audio/Brian Eno - An Ending (Ascent).mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
-    </audio>
-
     <!-- 音频控制 -->
     <div class="audio-control">
         <button class="audio-toggle" id="audio-toggle" title="Toggle Music">
@@ -739,6 +733,8 @@
 
     <!-- Three.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- 全局音频系统 -->
+    <script src="script.js"></script>
     
     <script>
         // ===== WebGL粒子系统配置 =====
@@ -757,101 +753,6 @@
         };
 
         let scene, camera, renderer, particles, time = 0;
-
-        // ===== 音频控制系统 =====
-        let audioSystem = {
-            music: null,
-            isPlaying: false,
-            volume: 0.5,
-            
-            init() {
-                this.music = document.getElementById('background-music');
-                this.music.volume = this.volume;
-                
-                // 尝试自动播放
-                this.tryAutoPlay();
-                
-                // 绑定事件
-                this.bindEvents();
-            },
-            
-            async tryAutoPlay() {
-                try {
-                    await this.music.play();
-                    this.isPlaying = true;
-                    this.updateIcon();
-                } catch (error) {
-                    console.log('自动播放被阻止，用户需要手动启动音乐');
-                    this.isPlaying = false;
-                    this.updateIcon();
-                }
-            },
-            
-            toggle() {
-                if (this.isPlaying) {
-                    this.music.pause();
-                    this.isPlaying = false;
-                } else {
-                    this.music.play();
-                    this.isPlaying = true;
-                }
-                this.updateIcon();
-            },
-            
-            setVolume(volume) {
-                this.volume = volume / 100;
-                this.music.volume = this.volume;
-                document.getElementById('volume-text').textContent = volume + '%';
-            },
-            
-            updateIcon() {
-                const icon = document.getElementById('audio-icon');
-                icon.textContent = this.isPlaying ? '🔊' : '🔇';
-            },
-            
-            bindEvents() {
-                // 播放/暂停按钮
-                document.getElementById('audio-toggle').addEventListener('click', () => {
-                    this.toggle();
-                });
-                
-                // 音量控制
-                const volumeSlider = document.getElementById('volume-slider');
-                volumeSlider.addEventListener('input', (e) => {
-                    this.setVolume(e.target.value);
-                });
-                
-                // 显示/隐藏音量控制
-                const audioToggle = document.getElementById('audio-toggle');
-                const volumeControl = document.getElementById('volume-control');
-                
-                audioToggle.addEventListener('mouseenter', () => {
-                    volumeControl.classList.add('show');
-                });
-                
-                document.querySelector('.audio-control').addEventListener('mouseleave', () => {
-                    volumeControl.classList.remove('show');
-                });
-                
-                // 键盘快捷键
-                document.addEventListener('keydown', (e) => {
-                    if (e.key === 'm' || e.key === 'M') {
-                        this.toggle();
-                    }
-                });
-                
-                // 处理音频加载错误
-                this.music.addEventListener('error', () => {
-                    console.error('背景音乐加载失败');
-                });
-                
-                // 音频结束后重新播放
-                this.music.addEventListener('ended', () => {
-                    this.music.currentTime = 0;
-                    this.music.play();
-                });
-            }
-        };
 
         // ===== WebGL粒子系统 =====
         function hash(n) {
@@ -1169,8 +1070,9 @@
 
         // ===== 事件监听器 =====
         document.addEventListener('DOMContentLoaded', () => {
-            // 初始化音频系统
-            audioSystem.init();
+            // 初始化全局音频系统
+            GlobalAudio.initBackgroundMusic('assets/audio/Brian Eno - An Ending (Ascent).mp3');
+            AudioUI.init();
             
             // 立即初始化粒子系统
             initParticleSystem();

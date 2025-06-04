@@ -228,11 +228,8 @@
     </style>
 </head>
 <body>
-    <!-- 卡芙卡念白音频 -->
-    <audio id="kafka-narration" preload="auto">
-        <source src="assets/audio/kafka.wav" type="audio/wav">
-        Your browser does not support the audio element.
-    </audio>
+    <!-- Three.js和全局音频系统 -->
+    <script src="script.js"></script>
 
     <!-- 开场介绍界面 -->
     <div id="intro-screen">
@@ -335,69 +332,6 @@
         let introCompleted = false;
         let autoTransitionMode = false; // 设为 false 启用按钮模式
         
-        // ===== 卡芙卡念白音频系统 =====
-        let kafkaAudio = {
-            audio: null,
-            isPlaying: false,
-            
-            init() {
-                this.audio = document.getElementById('kafka-narration');
-                
-                // 设置音频事件监听器
-                this.audio.addEventListener('loadeddata', () => {
-                    console.log('卡芙卡念白音频加载完成');
-                    TimingUtils.logTiming('音频时长', this.audio.duration || 0);
-                });
-                
-                this.audio.addEventListener('error', (e) => {
-                    console.error('卡芙卡念白音频加载失败:', e);
-                });
-                
-                this.audio.addEventListener('ended', () => {
-                    console.log('卡芙卡念白播放完成');
-                    this.isPlaying = false;
-                });
-                
-                // 尝试自动播放
-                this.tryAutoPlay();
-            },
-            
-            async tryAutoPlay() {
-                try {
-                    await this.audio.play();
-                    this.isPlaying = true;
-                    console.log('卡芙卡念白开始播放');
-                } catch (error) {
-                    console.log('自动播放被浏览器阻止，等待用户交互后播放');
-                    this.isPlaying = false;
-                    
-                    // 添加点击页面自动播放的功能
-                    const playOnInteraction = async () => {
-                        try {
-                            await this.audio.play();
-                            this.isPlaying = true;
-                            console.log('用户交互后开始播放卡芙卡念白');
-                            document.removeEventListener('click', playOnInteraction);
-                            document.removeEventListener('keydown', playOnInteraction);
-                        } catch (e) {
-                            console.error('播放失败:', e);
-                        }
-                    };
-                    
-                    document.addEventListener('click', playOnInteraction);
-                    document.addEventListener('keydown', playOnInteraction);
-                }
-            },
-            
-            stop() {
-                if (this.audio && this.isPlaying) {
-                    this.audio.pause();
-                    this.audio.currentTime = 0;
-                    this.isPlaying = false;
-                }
-            }
-        };
-        
         // ===== 介绍界面动画控制 =====
         function startIntroAnimation() {
             const textLines = document.querySelectorAll('.text-line');
@@ -443,7 +377,7 @@
         // ===== 跳转到对话页面 =====
         function goToDialogue() {
             // 停止卡芙卡念白
-            kafkaAudio.stop();
+            GlobalAudio.stopNarration();
             
             // 页面淡出效果
             const fadeTime = TIMING_CONFIG.globalAnimation.fadeOutDuration;
@@ -493,8 +427,8 @@
 
         // ===== 事件监听器 =====
         document.addEventListener('DOMContentLoaded', () => {
-            // 初始化卡芙卡念白音频系统
-            kafkaAudio.init();
+            // 初始化卡芙卡念白音频系统（自动播放）
+            GlobalAudio.initNarration('assets/audio/kafka.wav', true);
             
             // 开始介绍动画
             const startDelay = TIMING_CONFIG.globalAnimation.startDelay;

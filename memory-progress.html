@@ -634,6 +634,8 @@
     <!-- 返回按钮 -->
     <button class="return-button" onclick="goBack()">返回</button>
 
+    <!-- 全局音频系统 -->
+    <script src="script.js"></script>
     <script>
         // ===== 记忆拼图管理器 =====
         class MemoryPuzzle {
@@ -654,6 +656,9 @@
             }
 
             init() {
+                // 初始化全局音频系统（继续播放背景音乐）
+                GlobalAudio.initBackgroundMusic('assets/audio/Brian Eno - An Ending (Ascent).mp3');
+                
                 // 创建背景粒子
                 this.createParticles();
                 

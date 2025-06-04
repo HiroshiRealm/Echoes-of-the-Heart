@@ -461,3 +461,336 @@ function createParticles() {
 
 // Initialize particles on load (optional)
 // createParticles(); 
+
+// ===== 全局音频管理系统 =====
+class GlobalAudioManager {
+    constructor() {
+        this.backgroundMusic = null;
+        this.currentNarration = null;
+        this.musicVolume = 0.5;
+        this.isBackgroundMusicPlaying = false;
+        this.isNarrationPlaying = false;
+        
+        // 音乐状态持久化键名
+        this.STORAGE_KEYS = {
+            musicTime: 'audioManager_musicTime',
+            musicVolume: 'audioManager_musicVolume',
+            musicPlaying: 'audioManager_musicPlaying'
+        };
+        
+        this.init();
+    }
+    
+    init() {
+        // 加载保存的音频状态
+        this.loadAudioState();
+        
+        // 页面卸载时保存状态
+        window.addEventListener('beforeunload', () => {
+            this.saveAudioState();
+        });
+        
+        // 页面可见性变化时处理音频
+        document.addEventListener('visibilitychange', () => {
+            this.handleVisibilityChange();
+        });
+    }
+    
+    // ===== 背景音乐管理 =====
+    async initBackgroundMusic(audioPath) {
+        if (this.backgroundMusic) {
+            return; // 已经初始化过了
+        }
+        
+        this.backgroundMusic = new Audio(audioPath);
+        this.backgroundMusic.loop = true;
+        this.backgroundMusic.volume = this.musicVolume;
+        
+        // 事件监听器
+        this.backgroundMusic.addEventListener('loadeddata', () => {
+            console.log('背景音乐加载完成');
+            
+            // 恢复之前的播放位置
+            const savedTime = this.getSavedMusicTime();
+            if (savedTime > 0) {
+                this.backgroundMusic.currentTime = savedTime;
+            }
+            
+            // 如果之前在播放，继续播放
+            if (this.getSavedMusicPlayingState()) {
+                this.playBackgroundMusic();
+            }
+        });
+        
+        this.backgroundMusic.addEventListener('error', (e) => {
+            console.error('背景音乐加载失败:', e);
+        });
+        
+        this.backgroundMusic.addEventListener('timeupdate', () => {
+            // 定期保存播放位置
+            if (this.backgroundMusic && !this.backgroundMusic.paused) {
+                this.saveMusicTime(this.backgroundMusic.currentTime);
+            }
+        });
+    }
+    
+    async playBackgroundMusic() {
+        if (!this.backgroundMusic) return;
+        
+        try {
+            await this.backgroundMusic.play();
+            this.isBackgroundMusicPlaying = true;
+            this.saveMusicPlayingState(true);
+            console.log('背景音乐开始播放');
+        } catch (error) {
+            console.log('背景音乐自动播放被阻止:', error);
+            this.isBackgroundMusicPlaying = false;
+        }
+    }
+    
+    pauseBackgroundMusic() {
+        if (this.backgroundMusic && !this.backgroundMusic.paused) {
+            this.backgroundMusic.pause();
+            this.isBackgroundMusicPlaying = false;
+            this.saveMusicPlayingState(false);
+        }
+    }
+    
+    toggleBackgroundMusic() {
+        if (this.isBackgroundMusicPlaying) {
+            this.pauseBackgroundMusic();
+        } else {
+            this.playBackgroundMusic();
+        }
+    }
+    
+    setMusicVolume(volume) {
+        this.musicVolume = volume / 100;
+        if (this.backgroundMusic) {
+            this.backgroundMusic.volume = this.musicVolume;
+        }
+        this.saveMusicVolume(this.musicVolume);
+    }
+    
+    // ===== 叙述音频管理 =====
+    async initNarration(audioPath, autoPlay = true) {
+        // 如果有正在播放的叙述，先停止
+        if (this.currentNarration) {
+            this.stopNarration();
+        }
+        
+        this.currentNarration = new Audio(audioPath);
+        
+        this.currentNarration.addEventListener('loadeddata', () => {
+            console.log('叙述音频加载完成');
+            if (autoPlay) {
+                this.playNarration();
+            }
+        });
+        
+        this.currentNarration.addEventListener('error', (e) => {
+            console.error('叙述音频加载失败:', e);
+        });
+        
+        this.currentNarration.addEventListener('ended', () => {
+            console.log('叙述播放完成');
+            this.isNarrationPlaying = false;
+        });
+    }
+    
+    async playNarration() {
+        if (!this.currentNarration) return;
+        
+        try {
+            await this.currentNarration.play();
+            this.isNarrationPlaying = true;
+            console.log('叙述开始播放');
+        } catch (error) {
+            console.log('叙述自动播放被阻止，等待用户交互');
+            this.setupNarrationUserInteraction();
+        }
+    }
+    
+    setupNarrationUserInteraction() {
+        const playOnInteraction = async () => {
+            if (this.currentNarration) {
+                try {
+                    await this.currentNarration.play();
+                    this.isNarrationPlaying = true;
+                    console.log('用户交互后开始播放叙述');
+                    document.removeEventListener('click', playOnInteraction);
+                    document.removeEventListener('keydown', playOnInteraction);
+                } catch (e) {
+                    console.error('叙述播放失败:', e);
+                }
+            }
+        };
+        
+        document.addEventListener('click', playOnInteraction);
+        document.addEventListener('keydown', playOnInteraction);
+    }
+    
+    stopNarration() {
+        if (this.currentNarration) {
+            this.currentNarration.pause();
+            this.currentNarration.currentTime = 0;
+            this.isNarrationPlaying = false;
+        }
+    }
+    
+    // ===== 状态持久化 =====
+    saveAudioState() {
+        if (this.backgroundMusic) {
+            this.saveMusicTime(this.backgroundMusic.currentTime);
+            this.saveMusicPlayingState(this.isBackgroundMusicPlaying);
+        }
+        this.saveMusicVolume(this.musicVolume);
+    }
+    
+    loadAudioState() {
+        this.musicVolume = this.getSavedMusicVolume();
+    }
+    
+    saveMusicTime(time) {
+        localStorage.setItem(this.STORAGE_KEYS.musicTime, time.toString());
+    }
+    
+    getSavedMusicTime() {
+        const saved = localStorage.getItem(this.STORAGE_KEYS.musicTime);
+        return saved ? parseFloat(saved) : 0;
+    }
+    
+    saveMusicVolume(volume) {
+        localStorage.setItem(this.STORAGE_KEYS.musicVolume, volume.toString());
+    }
+    
+    getSavedMusicVolume() {
+        const saved = localStorage.getItem(this.STORAGE_KEYS.musicVolume);
+        return saved ? parseFloat(saved) : 0.5;
+    }
+    
+    saveMusicPlayingState(isPlaying) {
+        localStorage.setItem(this.STORAGE_KEYS.musicPlaying, isPlaying.toString());
+    }
+    
+    getSavedMusicPlayingState() {
+        const saved = localStorage.getItem(this.STORAGE_KEYS.musicPlaying);
+        return saved === 'true';
+    }
+    
+    // ===== 页面可见性处理 =====
+    handleVisibilityChange() {
+        if (document.hidden) {
+            // 页面不可见时暂停音频（可选）
+            // this.pauseBackgroundMusic();
+        } else {
+            // 页面恢复可见时继续播放
+            if (this.getSavedMusicPlayingState() && this.backgroundMusic) {
+                this.playBackgroundMusic();
+            }
+        }
+    }
+    
+    // ===== 清理方法 =====
+    cleanup() {
+        this.saveAudioState();
+        if (this.backgroundMusic) {
+            this.backgroundMusic.pause();
+        }
+        if (this.currentNarration) {
+            this.currentNarration.pause();
+        }
+    }
+}
+
+// ===== 全局实例 =====
+window.GlobalAudio = new GlobalAudioManager();
+
+// ===== 音频UI控制器 =====
+class AudioUIController {
+    constructor(audioManager) {
+        this.audioManager = audioManager;
+        this.audioToggle = null;
+        this.volumeSlider = null;
+        this.volumeText = null;
+        this.volumeControl = null;
+    }
+    
+    init() {
+        this.audioToggle = document.getElementById('audio-toggle');
+        this.volumeSlider = document.getElementById('volume-slider');
+        this.volumeText = document.getElementById('volume-text');
+        this.volumeControl = document.getElementById('volume-control');
+        
+        if (!this.audioToggle) return;
+        
+        this.bindEvents();
+        this.updateUI();
+    }
+    
+    bindEvents() {
+        // 播放/暂停按钮
+        this.audioToggle.addEventListener('click', () => {
+            this.audioManager.toggleBackgroundMusic();
+            this.updateIcon();
+        });
+        
+        // 音量控制
+        if (this.volumeSlider) {
+            this.volumeSlider.addEventListener('input', (e) => {
+                this.audioManager.setMusicVolume(e.target.value);
+                this.updateVolumeText(e.target.value);
+            });
+        }
+        
+        // 显示/隐藏音量控制
+        if (this.volumeControl) {
+            this.audioToggle.addEventListener('mouseenter', () => {
+                this.volumeControl.classList.add('show');
+            });
+            
+            document.querySelector('.audio-control').addEventListener('mouseleave', () => {
+                this.volumeControl.classList.remove('show');
+            });
+        }
+        
+        // 键盘快捷键
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'm' || e.key === 'M') {
+                this.audioManager.toggleBackgroundMusic();
+                this.updateIcon();
+            }
+        });
+    }
+    
+    updateUI() {
+        this.updateIcon();
+        this.updateVolumeSlider();
+    }
+    
+    updateIcon() {
+        if (this.audioToggle) {
+            const icon = this.audioToggle.querySelector('#audio-icon');
+            if (icon) {
+                icon.textContent = this.audioManager.isBackgroundMusicPlaying ? '🔊' : '🔇';
+            }
+        }
+    }
+    
+    updateVolumeSlider() {
+        if (this.volumeSlider) {
+            const volume = this.audioManager.musicVolume * 100;
+            this.volumeSlider.value = volume;
+            this.updateVolumeText(volume);
+        }
+    }
+    
+    updateVolumeText(volume) {
+        if (this.volumeText) {
+            this.volumeText.textContent = Math.round(volume) + '%';
+        }
+    }
+}
+
+// ===== 全局UI控制器实例 =====
+window.AudioUI = new AudioUIController(window.GlobalAudio); 
