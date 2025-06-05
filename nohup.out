@@ -560,3 +560,13 @@ ConnectionResetError: [Errno 104] Connection reset by peer
 10.22.34.172 - - [05/Jun/2025 12:47:34] "GET /favicon.ico HTTP/1.1" 404 -
 10.22.34.172 - - [05/Jun/2025 13:17:36] code 404, message File not found
 10.22.34.172 - - [05/Jun/2025 13:17:36] "GET /pages/dialogue.html HTTP/1.1" 404 -
+172.27.157.126 - - [05/Jun/2025 19:23:19] "GET / HTTP/1.1" 200 -
+172.27.157.126 - - [05/Jun/2025 19:23:19] code 404, message File not found
+172.27.157.126 - - [05/Jun/2025 19:23:19] "GET /script.js HTTP/1.1" 404 -
+172.27.157.126 - - [05/Jun/2025 19:23:19] code 404, message File not found
+172.27.157.126 - - [05/Jun/2025 19:23:19] "GET /styles.css HTTP/1.1" 404 -
+172.27.157.126 - - [05/Jun/2025 19:23:19] code 404, message File not found
+172.27.157.126 - - [05/Jun/2025 19:23:19] "GET /assets/images/character.png HTTP/1.1" 404 -
+172.27.157.126 - - [05/Jun/2025 19:23:19] code 404, message File not found
+172.27.157.126 - - [05/Jun/2025 19:23:19] "GET /assets/images/background.png HTTP/1.1" 404 -
+172.27.157.126 - - [05/Jun/2025 19:23:26] "GET / HTTP/1.1" 200 -
