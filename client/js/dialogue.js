@@ -528,19 +528,20 @@ class DialogueManager {
     updateParticleConfig(config) {
         if (this.particleSystem && this.particleSystem.updateConfig) {
             this.particleSystem.updateConfig(config);
-            
-            // 如果更改了颜色，需要重新创建粒子
-            if (config.baseColor1 !== undefined || config.baseColor2 !== undefined) {
-                this.recreateParticles();
-            }
         }
     }
 
     recreateParticles() {
         if (this.particleSystem) {
+            // 保存当前配置
+            const currentConfig = Object.assign({}, this.particleSystem.CONFIG);
+            
+            // 销毁现有系统
             this.particleSystem.destroy();
+            
+            // 重新创建
             setTimeout(() => {
-                this.particleSystem = new ParticleSystem('particle-background', this.particleSystem.CONFIG);
+                this.particleSystem = new ParticleSystem('particle-background', currentConfig);
             }, 100);
         }
     }
@@ -565,7 +566,6 @@ class DialogueManager {
 
         // 应用配置
         this.updateParticleConfig(defaultConfig);
-        this.recreateParticles();
     }
 
     randomizeParticleSettings() {
@@ -603,7 +603,6 @@ class DialogueManager {
         };
         
         this.updateParticleConfig(config);
-        this.recreateParticles();
     }
 
     hslToHex(h, s, l) {
