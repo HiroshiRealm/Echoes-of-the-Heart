@@ -17,7 +17,7 @@ class DialogueManager {
         this.isParticleControlVisible = false;
         
         // API配置
-        this.apiBaseUrl = 'http://172.26.82.133:3000';
+        this.apiBaseUrl = window.API_BASE_URL;
         
         this.init();
     }

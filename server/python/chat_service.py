@@ -257,6 +257,28 @@ def clear_chat_history():
     
     return {"status": "success"}
 
+def get_chat_history():
+    """
+    获取聊天历史记录
+    Returns:
+        list: 聊天历史记录列表
+    """
+    ensure_data_files()
+
+    # 获取用户特定的数据目录
+    user_data_dir = os.getenv('USER_DATA_DIR')
+    if not user_data_dir:
+        raise ValueError("USER_DATA_DIR environment variable not set")
+    
+    history_path = os.path.join(user_data_dir, 'chat_history.json')
+    
+    try:
+        with open(history_path, 'r', encoding='utf-8') as f:
+            history = json.load(f)
+        return history
+    except FileNotFoundError:
+        return []
+
 def main():
     try:
         # 设置标准输入输出的编码
@@ -275,6 +297,8 @@ def main():
             result = clear_memories()
         elif function_name == 'clear_chat_history':
             result = clear_chat_history()
+        elif function_name == 'get_chat_history':
+            result = get_chat_history()
         else:
             raise ValueError(f"Unknown function: {function_name}")
         

@@ -239,6 +239,35 @@ app.get('/memories', async (req, res) => {
     }
 });
 
+// Get chat history endpoint
+app.get('/chat-history', async (req, res) => {
+    try {
+        const userIP = getRealIP(req);
+        console.log(`Get chat history request from IP: ${userIP}`);
+        
+        // Set environment variable for user data directory
+        const userDataDir = getUserDataDir(userIP);
+        process.env.USER_DATA_DIR = userDataDir;
+
+        // Get chat history from Python service
+        const response = await runPythonScript(
+            'python/chat_service.py',
+            'get_chat_history',
+            {}
+        );
+        
+        // Check for errors
+        if (response.error) {
+            throw new Error(response.error);
+        }
+        
+        res.json({ history: response.result || [] });
+    } catch (error) {
+        console.error('Get chat history error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // Start the server
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
