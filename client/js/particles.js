@@ -303,6 +303,14 @@ class ParticleSystem {
 
     updateConfig(newConfig) {
         Object.assign(this.CONFIG, newConfig);
+        
+        // 如果更新了颜色配置，需要转换为THREE.Color对象
+        if (newConfig.baseColor1 !== undefined) {
+            this.CONFIG.baseColor1 = new THREE.Color(newConfig.baseColor1);
+        }
+        if (newConfig.baseColor2 !== undefined) {
+            this.CONFIG.baseColor2 = new THREE.Color(newConfig.baseColor2);
+        }
     }
 }
 
