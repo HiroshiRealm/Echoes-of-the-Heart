@@ -384,20 +384,26 @@ class DialogueManager {
 
     // 切换对话框显示/隐藏
     toggleDialogueVisibility() {
-        if (!this.dialogueContainer || !this.dialogueControls) return;
+        if (!this.dialogueContainer || !this.toggleDialogueBtn) return;
 
         this.isDialogueHidden = !this.isDialogueHidden;
 
         if (this.isDialogueHidden) {
             // 隐藏对话框
             this.dialogueContainer.classList.add('hidden');
-            this.dialogueControls.classList.add('dialogue-hidden');
+            if (this.dialogueControls) {
+                this.dialogueControls.classList.add('dialogue-hidden');
+            }
+            this.toggleDialogueBtn.classList.add('dialogue-hidden');
             this.toggleDialogueBtn.textContent = '👁️‍🗨️'; // 显示对话框图标
             this.toggleDialogueBtn.title = '显示对话框';
         } else {
             // 显示对话框
             this.dialogueContainer.classList.remove('hidden');
-            this.dialogueControls.classList.remove('dialogue-hidden');
+            if (this.dialogueControls) {
+                this.dialogueControls.classList.remove('dialogue-hidden');
+            }
+            this.toggleDialogueBtn.classList.remove('dialogue-hidden');
             this.toggleDialogueBtn.textContent = '👁️'; // 隐藏对话框图标
             this.toggleDialogueBtn.title = '隐藏对话框';
         }
