@@ -263,6 +263,8 @@ def get_chat_history():
     Returns:
         list: 聊天历史记录列表
     """
+    ensure_data_files()
+
     # 获取用户特定的数据目录
     user_data_dir = os.getenv('USER_DATA_DIR')
     if not user_data_dir:
