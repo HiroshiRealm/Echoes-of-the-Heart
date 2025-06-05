@@ -38,15 +38,22 @@ class DialogueManager {
 
         // 绑定事件
         this.bindEvents();
-
+        
         // 初始化粒子系统
         this.initParticleSystem();
         
-        // 初始化音频和UI
+        // 初始化音频系统
         this.initAudioSystem();
         
-        // 添加欢迎消息
-        this.addWelcomeMessage();
+        // 检查来源页面
+        const referrer = document.referrer;
+        if (referrer && referrer.includes('memory-progress.html')) {
+            // 从记忆进度页面返回，加载历史消息
+            this.loadChatHistory();
+        } else {
+            // 其他情况显示欢迎消息
+            this.addWelcomeMessage();
+        }
     }
 
     // 绑定事件监听器
