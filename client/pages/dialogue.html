@@ -26,21 +26,27 @@
             <div class="memory-progress-text">记忆进度</div>
         </div>
 
-        <!-- 音频控制组件 -->
-        <div class="audio-control">
-            <button id="audioToggle" class="audio-toggle">🔊</button>
-            <div id="volumeControl" class="volume-control">
-                <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="70">
+        <!-- 顶部控制组件 -->
+        <div class="top-controls">
+            <!-- 显示/隐藏对话框按钮 -->
+            <button id="toggleDialogueBtn" class="control-btn toggle-dialogue-btn global-toggle" title="隐藏/显示对话框">👁️</button>
+            
+            <!-- 音频控制组件 -->
+            <div class="audio-control">
+                <button id="audioToggle" class="audio-toggle">🔊</button>
+                <div id="volumeControl" class="volume-control">
+                    <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="70">
+                </div>
             </div>
-        </div>
-
-        <!-- 聊天控制组件 -->
-        <div class="chat-control">
-            <button id="clearChatBtn" class="clear-chat-btn" title="清空聊天历史">🗑️</button>
         </div>
 
         <!-- 对话容器 -->
         <div class="dialogue-container">
+            <!-- 对话框控制按钮组 -->
+            <div class="dialogue-controls">
+                <button id="clearChatBtn" class="control-btn clear-chat-btn" title="清空聊天历史">🗑️</button>
+            </div>
+            
             <div id="chat-area" class="chat-area">
                 <!-- 对话消息将在这里动态添加 -->
             </div>
