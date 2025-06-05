@@ -287,22 +287,78 @@ class ParticleSystem {
     }
     
     destroy() {
+        // 停止动画循环
         if (this.animationId) {
             cancelAnimationFrame(this.animationId);
+            this.animationId = null;
         }
         
-        if (this.renderer) {
-            this.renderer.dispose();
-        }
-        
+        // 清理粒子系统
         if (this.particles) {
-            this.particles.geometry.dispose();
-            this.particles.material.dispose();
+            if (this.particles.geometry) {
+                this.particles.geometry.dispose();
+            }
+            if (this.particles.material) {
+                this.particles.material.dispose();
+            }
+            if (this.scene) {
+                this.scene.remove(this.particles);
+            }
+            this.particles = null;
         }
+        
+        // 清理渲染器
+        if (this.renderer) {
+            if (this.renderer.domElement && this.renderer.domElement.parentNode) {
+                this.renderer.domElement.parentNode.removeChild(this.renderer.domElement);
+            }
+            this.renderer.dispose();
+            this.renderer = null;
+        }
+        
+        // 清理场景
+        if (this.scene) {
+            this.scene = null;
+        }
+        
+        // 清理相机
+        this.camera = null;
     }
 
     updateConfig(newConfig) {
         Object.assign(this.CONFIG, newConfig);
+        
+        // 如果更新了颜色配置，需要转换为THREE.Color对象
+        if (newConfig.baseColor1 !== undefined) {
+            this.CONFIG.baseColor1 = new THREE.Color(newConfig.baseColor1);
+        }
+        if (newConfig.baseColor2 !== undefined) {
+            this.CONFIG.baseColor2 = new THREE.Color(newConfig.baseColor2);
+        }
+        
+        // 如果颜色发生变化，直接更新现有粒子的颜色
+        if ((newConfig.baseColor1 !== undefined || newConfig.baseColor2 !== undefined) && this.particles) {
+            this.updateParticleColors();
+        }
+    }
+    
+    updateParticleColors() {
+        if (!this.particles || !this.particles.geometry) return;
+        
+        const colors = this.particles.geometry.attributes.color.array;
+        
+        for (let i = 0; i < this.CONFIG.particleCount; i++) {
+            const i3 = i * 3;
+            
+            const colorMix = Math.random();
+            const color = this.CONFIG.baseColor1.clone().lerp(this.CONFIG.baseColor2, colorMix);
+            
+            colors[i3] = color.r;
+            colors[i3 + 1] = color.g;
+            colors[i3 + 2] = color.b;
+        }
+        
+        this.particles.geometry.attributes.color.needsUpdate = true;
     }
 }
 

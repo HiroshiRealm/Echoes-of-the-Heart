@@ -351,21 +351,154 @@ body {
 }
 
 /* 锁定状态 */
-.puzzle-piece.locked {
-    background: rgba(20, 30, 50, 0.8);
-    border-color: rgba(100, 180, 255, 0.2);
-    cursor: not-allowed;
+/* ===== 记忆背景和迷雾效果 ===== */
+.memory-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    border-radius: inherit;
+    opacity: 0;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.puzzle-piece.locked::after {
-    content: '🔒';
+/* 动态设置记忆背景图片 */
+.memory-background[data-memory="1"] { background-image: url('../assets/images/memories/memory_1.jpg'); }
+.memory-background[data-memory="2"] { background-image: url('../assets/images/memories/memory_2.jpg'); }
+.memory-background[data-memory="3"] { background-image: url('../assets/images/memories/memory_3.jpg'); }
+.memory-background[data-memory="4"] { background-image: url('../assets/images/memories/memory_4.jpg'); }
+.memory-background[data-memory="5"] { background-image: url('../assets/images/memories/memory_5.jpg'); }
+.memory-background[data-memory="6"] { background-image: url('../assets/images/memories/memory_6.jpg'); }
+.memory-background[data-memory="7"] { background-image: url('../assets/images/memories/memory_7.jpg'); }
+.memory-background[data-memory="8"] { background-image: url('../assets/images/memories/memory_8.jpg'); }
+.memory-background[data-memory="9"] { background-image: url('../assets/images/memories/memory_9.jpg'); }
+
+.mist-overlay {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 2rem;
-    color: rgba(100, 180, 255, 0.4);
-    text-shadow: 0 0 10px rgba(100, 180, 255, 0.3);
+    top: -20%;
+    left: -20%;
+    width: 140%;
+    height: 140%;
+    background: radial-gradient(
+        ellipse at center,
+        rgba(30, 60, 120, 0.9) 0%,
+        rgba(20, 40, 80, 0.7) 30%,
+        rgba(10, 30, 60, 0.5) 60%,
+        rgba(5, 20, 40, 0.3) 100%
+    );
+    border-radius: inherit;
+    filter: url(#mistFilter);
+    animation: mistFloat 6s ease-in-out infinite;
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.ripple-overlay {
+    position: absolute;
+    top: -10%;
+    left: -10%;
+    width: 120%;
+    height: 120%;
+    background: linear-gradient(
+        45deg,
+        rgba(100, 180, 255, 0.4) 0%,
+        rgba(80, 160, 220, 0.3) 25%,
+        rgba(60, 140, 200, 0.2) 50%,
+        rgba(40, 120, 180, 0.3) 75%,
+        rgba(100, 180, 255, 0.4) 100%
+    );
+    border-radius: inherit;
+    filter: url(#rippleFilter);
+    animation: rippleWave 4s ease-in-out infinite;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.puzzle-piece.locked {
+    background: rgba(10, 25, 45, 0.9);
+    border-color: rgba(100, 180, 255, 0.3);
+    cursor: not-allowed;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 悬停时的迷雾散开效果 */
+.puzzle-piece.locked:hover .mist-overlay {
+    filter: url(#mistClearFilter);
+    opacity: 0.6;
+    transform: scale(1.1);
+    animation: mistClear 2s ease-in-out infinite;
+}
+
+.puzzle-piece.locked:hover .ripple-overlay {
+    opacity: 0.4;
+    transform: scale(0.9);
+    animation: rippleFade 3s ease-in-out infinite;
+}
+
+.puzzle-piece.locked:hover .memory-background {
+    opacity: 0.8;
+    transform: scale(1.05);
+}
+
+/* 迷雾动画 */
+@keyframes mistFloat {
+    0%, 100% {
+        transform: translateX(0) translateY(0) scale(1);
+        opacity: 0.9;
+    }
+    25% {
+        transform: translateX(3px) translateY(-2px) scale(1.02);
+        opacity: 0.8;
+    }
+    50% {
+        transform: translateX(-2px) translateY(1px) scale(0.98);
+        opacity: 1;
+    }
+    75% {
+        transform: translateX(1px) translateY(-3px) scale(1.01);
+        opacity: 0.85;
+    }
+}
+
+@keyframes rippleWave {
+    0%, 100% {
+        transform: translateX(0) translateY(0) rotate(0deg);
+        opacity: 0.6;
+    }
+    33% {
+        transform: translateX(-1px) translateY(2px) rotate(1deg);
+        opacity: 0.8;
+    }
+    66% {
+        transform: translateX(2px) translateY(-1px) rotate(-1deg);
+        opacity: 0.7;
+    }
+}
+
+@keyframes mistClear {
+    0%, 100% {
+        transform: scale(1.1) translateX(0);
+        opacity: 0.6;
+    }
+    50% {
+        transform: scale(1.2) translateX(5px);
+        opacity: 0.3;
+    }
+}
+
+@keyframes rippleFade {
+    0%, 100% {
+        transform: scale(0.9) rotate(0deg);
+        opacity: 0.4;
+    }
+    50% {
+        transform: scale(0.8) rotate(2deg);
+        opacity: 0.2;
+    }
 }
 
 /* 激活动画状态 */
@@ -442,15 +575,13 @@ body {
         transform: scale(1) rotate(0deg);
         opacity: 1;
     }
-    50% {
-        transform: scale(0.8) rotate(180deg);
-        opacity: 0.8;
+    70% {
+        transform: scale(0.3) rotate(720deg);
+        opacity: 0.6;
     }
     100% {
-        transform: scale(0.6) rotate(360deg) translateX(50%) translateY(50%);
-        opacity: 0.9;
-        left: 50% !important;
-        top: 50% !important;
+        transform: scale(0) rotate(1080deg);
+        opacity: 0;
     }
 }
 
@@ -603,6 +734,15 @@ body {
     .test-btn {
         padding: 6px 12px;
         font-size: 10px;
+    }
+
+    /* 移动设备上的迷雾效果优化 */
+    .mist-overlay {
+        animation-duration: 8s; /* 稍微慢一点，减少性能负担 */
+    }
+
+    .ripple-overlay {
+        animation-duration: 5s;
     }
 }
 

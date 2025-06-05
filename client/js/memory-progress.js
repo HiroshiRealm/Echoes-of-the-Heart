@@ -42,6 +42,9 @@ class MemoryPuzzleManager {
         // 创建背景粒子效果
         this.createParticles();
         
+        // 初始化迷雾动画
+        this.initMistAnimation();
+        
         // 从后端加载真实的记忆状态
         await this.loadMemoriesFromServer();
         
@@ -101,6 +104,56 @@ class MemoryPuzzleManager {
             }
             memoryEntrance.classList.remove('has-new-memory');
         }
+    }
+
+    // 初始化迷雾动画
+    initMistAnimation() {
+        // 获取SVG滤镜元素
+        const mistTurbulence = document.getElementById('mistTurbulence');
+        const rippleTurbulence = document.getElementById('rippleTurbulence');
+        const clearTurbulence = document.getElementById('clearTurbulence');
+        
+        let time = 0;
+        
+        // 动态调整滤镜参数来产生流动的迷雾效果
+        const animateMist = () => {
+            time += 0.003;
+            
+            if (mistTurbulence) {
+                // 缓慢变化基础频率，创造迷雾飘动效果
+                const baseFreqX = 0.02 + Math.sin(time * 0.8) * 0.005;
+                const baseFreqY = 0.03 + Math.cos(time * 1.2) * 0.008;
+                mistTurbulence.setAttribute('baseFrequency', `${baseFreqX} ${baseFreqY}`);
+                
+                // 微调种子值，创造连续的变化
+                const seed = 2 + Math.sin(time * 0.5) * 0.5;
+                mistTurbulence.setAttribute('seed', seed.toString());
+            }
+            
+            if (rippleTurbulence) {
+                // 水波纹效果的频率变化
+                const rippleFreqX = 0.04 + Math.sin(time * 1.5) * 0.01;
+                const rippleFreqY = 0.08 + Math.cos(time * 2.0) * 0.02;
+                rippleTurbulence.setAttribute('baseFrequency', `${rippleFreqX} ${rippleFreqY}`);
+                
+                const rippleSeed = 5 + Math.cos(time * 0.7) * 1.0;
+                rippleTurbulence.setAttribute('seed', rippleSeed.toString());
+            }
+            
+            if (clearTurbulence) {
+                // 迷雾散开效果的变化
+                const clearFreqX = 0.01 + Math.sin(time * 0.6) * 0.003;
+                const clearFreqY = 0.02 + Math.cos(time * 0.9) * 0.005;
+                clearTurbulence.setAttribute('baseFrequency', `${clearFreqX} ${clearFreqY}`);
+            }
+            
+            requestAnimationFrame(animateMist);
+        };
+        
+        // 启动迷雾动画
+        animateMist();
+        
+        console.log('迷雾动画已初始化');
     }
 
     // 创建统一的背景粒子效果
@@ -218,24 +271,56 @@ class MemoryPuzzleManager {
             // 添加激活动画类
             piece.classList.add('activating');
             
-            // 设置背景图片
-            piece.style.backgroundImage = `url('${cameraImagePath}')`;
+            // 开始迷雾散开动画
+            const mistOverlay = piece.querySelector('.mist-overlay');
+            const rippleOverlay = piece.querySelector('.ripple-overlay');
+            const memoryBackground = piece.querySelector('.memory-background');
             
-            // 图片加载错误处理
-            const img = new Image();
-            img.onerror = () => {
-                console.warn(`相机拼图块图片加载失败: ${cameraImagePath}`);
-                // 使用渐变作为后备
-                piece.style.background = `linear-gradient(135deg, 
-                    rgba(100, 180, 255, 0.3) 0%, 
-                    rgba(120, 200, 255, 0.2) 100%)`;
-            };
-            img.src = cameraImagePath;
+            if (mistOverlay) {
+                mistOverlay.style.animation = 'mistClear 1s ease-out forwards';
+                setTimeout(() => {
+                    mistOverlay.style.opacity = '0';
+                }, 500);
+            }
+            
+            if (rippleOverlay) {
+                rippleOverlay.style.animation = 'rippleFade 0.8s ease-out forwards';
+                setTimeout(() => {
+                    rippleOverlay.style.opacity = '0';
+                }, 400);
+            }
+            
+            if (memoryBackground) {
+                memoryBackground.style.opacity = '1';
+                memoryBackground.style.transform = 'scale(1)';
+            }
+            
+            // 设置相机拼图块图片
+            setTimeout(() => {
+                piece.style.backgroundImage = `url('${cameraImagePath}')`;
+                
+                // 图片加载错误处理
+                const img = new Image();
+                img.onerror = () => {
+                    console.warn(`相机拼图块图片加载失败: ${cameraImagePath}`);
+                    // 使用渐变作为后备
+                    piece.style.background = `linear-gradient(135deg, 
+                        rgba(100, 180, 255, 0.3) 0%, 
+                        rgba(120, 200, 255, 0.2) 100%)`;
+                };
+                img.src = cameraImagePath;
+            }, 600);
             
             // 动画完成后更新状态
             setTimeout(() => {
                 piece.classList.remove('activating', 'locked');
                 piece.classList.add('unlocked');
+                
+                // 完全移除迷雾层
+                if (mistOverlay) mistOverlay.remove();
+                if (rippleOverlay) rippleOverlay.remove();
+                if (memoryBackground) memoryBackground.remove();
+                
                 resolve();
             }, 1200); // 激活动画时长
         });
@@ -267,29 +352,41 @@ class MemoryPuzzleManager {
         // 添加完成状态类
         this.puzzleGrid.classList.add('completing');
         
+        // 获取网格的实际内容区域（排除padding）
+        const gridRect = this.puzzleGrid.getBoundingClientRect();
+        const padding = 20; // CSS中定义的padding
+        const contentWidth = gridRect.width - (padding * 2);
+        const contentHeight = gridRect.height - (padding * 2);
+        const centerX = padding + contentWidth / 2;
+        const centerY = padding + contentHeight / 2;
+        
         // 记录每个拼图块的原始位置，并设置为绝对定位
         this.pieces.forEach((piece, index) => {
             const rect = piece.getBoundingClientRect();
-            const gridRect = this.puzzleGrid.getBoundingClientRect();
+            const relativeLeft = rect.left - gridRect.left;
+            const relativeTop = rect.top - gridRect.top;
             
-            piece.style.left = (rect.left - gridRect.left) + 'px';
-            piece.style.top = (rect.top - gridRect.top) + 'px';
-            piece.style.width = rect.width + 'px';
-            piece.style.height = rect.height + 'px';
+            // 保持正方形比例 - 取较小的一边作为正方形尺寸
+            const pieceSize = Math.min(rect.width, rect.height);
             
-            // 添加聚拢类，触发CSS动画
+            piece.style.position = 'absolute';
+            piece.style.left = relativeLeft + 'px';
+            piece.style.top = relativeTop + 'px';
+            piece.style.width = pieceSize + 'px';
+            piece.style.height = pieceSize + 'px';
+            piece.style.zIndex = '100';
+            
+            // 错开启动时间，添加聚拢动画
             setTimeout(() => {
+                piece.style.transition = 'all 2s cubic-bezier(0.4, 0, 0.2, 1)';
+                piece.style.left = (centerX - pieceSize / 2) + 'px';
+                piece.style.top = (centerY - pieceSize / 2) + 'px';
                 piece.classList.add('converging');
-            }, index * 100); // 错开每个块的启动时间
+            }, index * 100);
         });
 
         // 等待聚拢动画完成
         await new Promise(resolve => setTimeout(resolve, 2500));
-        
-        // 隐藏拼图块并显示完整相机
-        this.pieces.forEach(piece => {
-            piece.style.opacity = '0';
-        });
         
         // 创建并显示完整相机图片
         const completeCamera = document.createElement('div');
@@ -345,6 +442,17 @@ class MemoryPuzzleManager {
             if (this.unlockedMemories[index]) {
                 piece.classList.remove('locked');
                 piece.classList.add('unlocked');
+                
+                // 移除迷雾效果
+                const mistOverlay = piece.querySelector('.mist-overlay');
+                const rippleOverlay = piece.querySelector('.ripple-overlay');
+                const memoryBackground = piece.querySelector('.memory-background');
+                
+                if (mistOverlay) mistOverlay.remove();
+                if (rippleOverlay) rippleOverlay.remove();
+                if (memoryBackground) memoryBackground.remove();
+                
+                // 设置相机拼图块图片
                 const cameraImagePath = `../assets/images/camera/camera_piece_${index + 1}.png`;
                 piece.style.backgroundImage = `url('${cameraImagePath}')`;
             }

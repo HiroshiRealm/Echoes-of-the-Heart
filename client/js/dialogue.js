@@ -11,6 +11,11 @@ class DialogueManager {
         this.particleSystem = null;
         this.isDialogueHidden = false;
         
+        // 粒子效果控制相关
+        this.particleControlBtn = null;
+        this.particleControlPanel = null;
+        this.isParticleControlVisible = false;
+        
         // API配置
         this.apiBaseUrl = 'http://localhost:3000';
         
@@ -26,6 +31,10 @@ class DialogueManager {
         this.toggleDialogueBtn = document.getElementById('toggleDialogueBtn');
         this.dialogueContainer = document.querySelector('.dialogue-container');
         this.dialogueControls = document.querySelector('.dialogue-controls');
+        
+        // 粒子效果控制元素
+        this.particleControlBtn = document.getElementById('particleControlBtn');
+        this.particleControlPanel = document.getElementById('particleControlPanel');
 
         // 绑定事件
         this.bindEvents();
@@ -67,6 +76,16 @@ class DialogueManager {
                 this.toggleDialogueVisibility();
             });
         }
+
+        // 粒子效果控制按钮
+        if (this.particleControlBtn) {
+            this.particleControlBtn.addEventListener('click', () => {
+                this.toggleParticleControlPanel();
+            });
+        }
+
+        // 粒子效果控制面板事件
+        this.bindParticleControlEvents();
 
         // 窗口大小调整
         window.addEventListener('resize', () => {
@@ -419,6 +438,182 @@ class DialogueManager {
         setTimeout(() => {
             window.location.href = '../memory-progress.html';
         }, 800);
+    }
+
+    // ===== 粒子效果控制方法 =====
+    bindParticleControlEvents() {
+        // 关闭面板按钮
+        const closeBtn = document.getElementById('closeParticlePanel');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                this.hideParticleControlPanel();
+            });
+        }
+
+        // 颜色控制
+        const baseColor1 = document.getElementById('baseColor1');
+        const baseColor2 = document.getElementById('baseColor2');
+        if (baseColor1) {
+            baseColor1.addEventListener('input', (e) => {
+                this.updateParticleConfig({ baseColor1: parseInt(e.target.value.replace('#', '0x')) });
+            });
+        }
+        if (baseColor2) {
+            baseColor2.addEventListener('input', (e) => {
+                this.updateParticleConfig({ baseColor2: parseInt(e.target.value.replace('#', '0x')) });
+            });
+        }
+
+        // 滑块控制
+        const flowSpeed = document.getElementById('flowSpeed');
+        const turbulence = document.getElementById('turbulence');
+        const flowSpeedValue = document.getElementById('flowSpeedValue');
+        const turbulenceValue = document.getElementById('turbulenceValue');
+
+        if (flowSpeed) {
+            flowSpeed.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                if (flowSpeedValue) flowSpeedValue.textContent = value.toFixed(1);
+                this.updateParticleConfig({ flowSpeed: value });
+            });
+        }
+
+        if (turbulence) {
+            turbulence.addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                if (turbulenceValue) turbulenceValue.textContent = value.toFixed(1);
+                this.updateParticleConfig({ turbulence: value });
+            });
+        }
+
+        // 重置按钮
+        const resetBtn = document.getElementById('resetParticles');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                this.resetParticleSettings();
+            });
+        }
+
+        // 随机按钮
+        const randomBtn = document.getElementById('randomizeParticles');
+        if (randomBtn) {
+            randomBtn.addEventListener('click', () => {
+                this.randomizeParticleSettings();
+            });
+        }
+    }
+
+    toggleParticleControlPanel() {
+        if (this.isParticleControlVisible) {
+            this.hideParticleControlPanel();
+        } else {
+            this.showParticleControlPanel();
+        }
+    }
+
+    showParticleControlPanel() {
+        if (this.particleControlPanel) {
+            this.particleControlPanel.classList.add('show');
+            this.isParticleControlVisible = true;
+        }
+    }
+
+    hideParticleControlPanel() {
+        if (this.particleControlPanel) {
+            this.particleControlPanel.classList.remove('show');
+            this.isParticleControlVisible = false;
+        }
+    }
+
+    updateParticleConfig(config) {
+        if (this.particleSystem && this.particleSystem.updateConfig) {
+            this.particleSystem.updateConfig(config);
+        }
+    }
+
+    recreateParticles() {
+        if (this.particleSystem) {
+            // 保存当前配置
+            const currentConfig = Object.assign({}, this.particleSystem.CONFIG);
+            
+            // 销毁现有系统
+            this.particleSystem.destroy();
+            
+            // 重新创建
+            setTimeout(() => {
+                this.particleSystem = new ParticleSystem('particle-background', currentConfig);
+            }, 100);
+        }
+    }
+
+    resetParticleSettings() {
+        const defaultConfig = ParticlePresets.dialogue;
+        
+        // 更新UI控件
+        const baseColor1 = document.getElementById('baseColor1');
+        const baseColor2 = document.getElementById('baseColor2');
+        const flowSpeed = document.getElementById('flowSpeed');
+        const turbulence = document.getElementById('turbulence');
+        const flowSpeedValue = document.getElementById('flowSpeedValue');
+        const turbulenceValue = document.getElementById('turbulenceValue');
+
+        if (baseColor1) baseColor1.value = '#' + defaultConfig.baseColor1.toString(16).padStart(6, '0');
+        if (baseColor2) baseColor2.value = '#' + defaultConfig.baseColor2.toString(16).padStart(6, '0');
+        if (flowSpeed) flowSpeed.value = defaultConfig.flowSpeed;
+        if (turbulence) turbulence.value = defaultConfig.turbulence;
+        if (flowSpeedValue) flowSpeedValue.textContent = defaultConfig.flowSpeed.toFixed(1);
+        if (turbulenceValue) turbulenceValue.textContent = defaultConfig.turbulence.toFixed(1);
+
+        // 应用配置
+        this.updateParticleConfig(defaultConfig);
+    }
+
+    randomizeParticleSettings() {
+        // 随机生成颜色
+        const hue1 = Math.random() * 360;
+        const hue2 = (hue1 + 60 + Math.random() * 60) % 360;
+        
+        const color1 = this.hslToHex(hue1, 70 + Math.random() * 30, 30 + Math.random() * 40);
+        const color2 = this.hslToHex(hue2, 70 + Math.random() * 30, 30 + Math.random() * 40);
+        
+        const flowSpeed = 0.1 + Math.random() * 1.5;
+        const turbulence = 0.3 + Math.random() * 2.0;
+
+        // 更新UI
+        const baseColor1 = document.getElementById('baseColor1');
+        const baseColor2 = document.getElementById('baseColor2');
+        const flowSpeedSlider = document.getElementById('flowSpeed');
+        const turbulenceSlider = document.getElementById('turbulence');
+        const flowSpeedValue = document.getElementById('flowSpeedValue');
+        const turbulenceValue = document.getElementById('turbulenceValue');
+
+        if (baseColor1) baseColor1.value = color1;
+        if (baseColor2) baseColor2.value = color2;
+        if (flowSpeedSlider) flowSpeedSlider.value = flowSpeed;
+        if (turbulenceSlider) turbulenceSlider.value = turbulence;
+        if (flowSpeedValue) flowSpeedValue.textContent = flowSpeed.toFixed(1);
+        if (turbulenceValue) turbulenceValue.textContent = turbulence.toFixed(1);
+
+        // 应用配置
+        const config = {
+            baseColor1: parseInt(color1.replace('#', '0x')),
+            baseColor2: parseInt(color2.replace('#', '0x')),
+            flowSpeed: flowSpeed,
+            turbulence: turbulence
+        };
+        
+        this.updateParticleConfig(config);
+    }
+
+    hslToHex(h, s, l) {
+        l /= 100;
+        const a = s * Math.min(l, 1 - l) / 100;
+        const f = n => {
+            const k = (n + h / 30) % 12;
+            const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+            return Math.round(255 * color).toString(16).padStart(2, '0');
+        };
+        return `#${f(0)}${f(8)}${f(4)}`;
     }
 
     // ===== 清理方法 =====
