@@ -156,7 +156,7 @@ body {
 .menu-buttons {
     display: flex;
     flex-direction: column;
-    gap: 2.5rem;
+    gap: clamp(1.5rem, 3vh, 2.8rem);
     width: 100%;
     max-width: 400px;
     z-index: 3;
@@ -166,10 +166,10 @@ body {
     background: linear-gradient(135deg, rgba(30, 60, 150, 0.7) 0%, rgba(50, 90, 180, 0.7) 100%);
     border: 2px solid rgba(100, 200, 255, 0.8);
     border-radius: 12px;
-    padding: 1.6rem 3rem;
+    padding: clamp(1.2rem, 2.5vh, 1.8rem) clamp(2rem, 4vh, 3.5rem);
     font-family: 'Inter', sans-serif;
     font-weight: 600;
-    font-size: 2.2rem;
+    font-size: clamp(1.6rem, 3vh, 2.4rem);
     color: #ffffff;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -413,12 +413,12 @@ body {
     }
     
     .menu-buttons {
-        gap: 2rem;
+        gap: clamp(1.2rem, 2.5vh, 2.2rem);
     }
     
     .menu-btn {
-        font-size: 1.8rem;
-        padding: 1.3rem 2.5rem;
+        font-size: clamp(1.4rem, 2.8vh, 2rem);
+        padding: clamp(1rem, 2.2vh, 1.5rem) clamp(1.8rem, 3.5vh, 2.8rem);
     }
     
     /* Modal adjustments for tablets */
@@ -461,13 +461,13 @@ body {
     }
     
     .menu-buttons {
-        gap: 1.8rem;
+        gap: clamp(1rem, 2.2vh, 2rem);
         max-width: 320px;
     }
     
     .menu-btn {
-        font-size: 1.6rem;
-        padding: 1.1rem 2rem;
+        font-size: clamp(1.2rem, 2.5vh, 1.8rem);
+        padding: clamp(0.8rem, 2vh, 1.3rem) clamp(1.5rem, 3vh, 2.2rem);
     }
     
     /* Modal adjustments for mobile */
