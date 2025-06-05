@@ -12,6 +12,41 @@
     <link rel="stylesheet" href="../css/memory-progress.css">
 </head>
 <body>
+    <!-- SVG 滤镜定义 -->
+    <svg width="0" height="0" style="position: absolute;">
+        <defs>
+            <!-- 迷雾/涟漪效果滤镜 -->
+            <filter id="mistFilter" x="-50%" y="-50%" width="200%" height="200%">
+                <feTurbulence id="mistTurbulence" baseFrequency="0.02 0.03" numOctaves="4" seed="2" 
+                    stitchTiles="stitch" type="fractalNoise" result="noise"/>
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="15" result="displacement"/>
+                <feGaussianBlur in="displacement" stdDeviation="2" result="blur"/>
+                <feColorMatrix in="blur" type="matrix" 
+                    values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.8 0"/>
+            </filter>
+            
+            <!-- 水波纹效果滤镜 -->
+            <filter id="rippleFilter" x="-50%" y="-50%" width="200%" height="200%">
+                <feTurbulence id="rippleTurbulence" baseFrequency="0.04 0.08" numOctaves="3" seed="5" 
+                    stitchTiles="stitch" type="turbulence" result="ripple"/>
+                <feDisplacementMap in="SourceGraphic" in2="ripple" scale="8" result="rippleDisplace"/>
+                <feGaussianBlur in="rippleDisplace" stdDeviation="1" result="rippleBlur"/>
+                <feColorMatrix in="rippleBlur" type="matrix" 
+                    values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.7 0"/>
+            </filter>
+
+            <!-- 迷雾散开效果滤镜 */
+            <filter id="mistClearFilter" x="-50%" y="-50%" width="200%" height="200%">
+                <feTurbulence id="clearTurbulence" baseFrequency="0.01 0.02" numOctaves="2" seed="8" 
+                    stitchTiles="stitch" type="fractalNoise" result="clearNoise"/>
+                <feDisplacementMap in="SourceGraphic" in2="clearNoise" scale="5" result="clearDisplace"/>
+                <feGaussianBlur in="clearDisplace" stdDeviation="0.5" result="clearBlur"/>
+                <feColorMatrix in="clearBlur" type="matrix" 
+                    values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.4 0"/>
+            </filter>
+        </defs>
+    </svg>
+
     <!-- 背景粒子效果 -->
     <div id="particles"></div>
 
@@ -47,15 +82,51 @@
         <!-- 拼图容器 -->
         <div class="puzzle-container">
         <div class="puzzle-grid" id="puzzleGrid">
-            <div class="puzzle-piece locked" data-index="0"></div>
-            <div class="puzzle-piece locked" data-index="1"></div>
-            <div class="puzzle-piece locked" data-index="2"></div>
-            <div class="puzzle-piece locked" data-index="3"></div>
-            <div class="puzzle-piece locked" data-index="4"></div>
-            <div class="puzzle-piece locked" data-index="5"></div>
-            <div class="puzzle-piece locked" data-index="6"></div>
-            <div class="puzzle-piece locked" data-index="7"></div>
-            <div class="puzzle-piece locked" data-index="8"></div>
+            <div class="puzzle-piece locked" data-index="0">
+                <div class="memory-background" data-memory="1"></div>
+                <div class="mist-overlay"></div>
+                <div class="ripple-overlay"></div>
+            </div>
+            <div class="puzzle-piece locked" data-index="1">
+                <div class="memory-background" data-memory="2"></div>
+                <div class="mist-overlay"></div>
+                <div class="ripple-overlay"></div>
+            </div>
+            <div class="puzzle-piece locked" data-index="2">
+                <div class="memory-background" data-memory="3"></div>
+                <div class="mist-overlay"></div>
+                <div class="ripple-overlay"></div>
+            </div>
+            <div class="puzzle-piece locked" data-index="3">
+                <div class="memory-background" data-memory="4"></div>
+                <div class="mist-overlay"></div>
+                <div class="ripple-overlay"></div>
+            </div>
+            <div class="puzzle-piece locked" data-index="4">
+                <div class="memory-background" data-memory="5"></div>
+                <div class="mist-overlay"></div>
+                <div class="ripple-overlay"></div>
+            </div>
+            <div class="puzzle-piece locked" data-index="5">
+                <div class="memory-background" data-memory="6"></div>
+                <div class="mist-overlay"></div>
+                <div class="ripple-overlay"></div>
+            </div>
+            <div class="puzzle-piece locked" data-index="6">
+                <div class="memory-background" data-memory="7"></div>
+                <div class="mist-overlay"></div>
+                <div class="ripple-overlay"></div>
+            </div>
+            <div class="puzzle-piece locked" data-index="7">
+                <div class="memory-background" data-memory="8"></div>
+                <div class="mist-overlay"></div>
+                <div class="ripple-overlay"></div>
+            </div>
+            <div class="puzzle-piece locked" data-index="8">
+                <div class="memory-background" data-memory="9"></div>
+                <div class="mist-overlay"></div>
+                <div class="ripple-overlay"></div>
+            </div>
             </div>
         </div>
     </div>
