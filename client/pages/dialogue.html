@@ -34,13 +34,14 @@
             </div>
         </div>
 
-        <!-- 聊天控制组件 -->
-        <div class="chat-control">
-            <button id="clearChatBtn" class="clear-chat-btn" title="清空聊天历史">🗑️</button>
-        </div>
-
         <!-- 对话容器 -->
         <div class="dialogue-container">
+            <!-- 对话框控制按钮组 -->
+            <div class="dialogue-controls">
+                <button id="toggleDialogueBtn" class="control-btn toggle-dialogue-btn" title="隐藏/显示对话框">👁️</button>
+                <button id="clearChatBtn" class="control-btn clear-chat-btn" title="清空聊天历史">🗑️</button>
+            </div>
+            
             <div id="chat-area" class="chat-area">
                 <!-- 对话消息将在这里动态添加 -->
             </div>

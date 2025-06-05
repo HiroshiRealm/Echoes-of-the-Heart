@@ -5,7 +5,11 @@ class DialogueManager {
         this.chatInput = null;
         this.sendButton = null;
         this.clearChatBtn = null;
+        this.toggleDialogueBtn = null;
+        this.dialogueContainer = null;
+        this.dialogueControls = null;
         this.particleSystem = null;
+        this.isDialogueHidden = false;
         
         // API配置
         this.apiBaseUrl = 'http://172.26.82.133:3000';
@@ -19,6 +23,9 @@ class DialogueManager {
         this.chatInput = document.getElementById('chat-input');
         this.sendButton = document.getElementById('send-btn');
         this.clearChatBtn = document.getElementById('clearChatBtn');
+        this.toggleDialogueBtn = document.getElementById('toggleDialogueBtn');
+        this.dialogueContainer = document.querySelector('.dialogue-container');
+        this.dialogueControls = document.querySelector('.dialogue-controls');
 
         // 绑定事件
         this.bindEvents();
@@ -51,6 +58,13 @@ class DialogueManager {
         if (this.clearChatBtn) {
             this.clearChatBtn.addEventListener('click', () => {
                 this.confirmAndClearChat();
+            });
+        }
+
+        // 隐藏/显示对话框按钮
+        if (this.toggleDialogueBtn) {
+            this.toggleDialogueBtn.addEventListener('click', () => {
+                this.toggleDialogueVisibility();
             });
         }
 
@@ -365,6 +379,27 @@ class DialogueManager {
         // 简单的确认对话框
         if (confirm('确定要清空所有聊天历史和记忆吗？此操作无法撤销。')) {
             this.clearChatHistory();
+        }
+    }
+
+    // 切换对话框显示/隐藏
+    toggleDialogueVisibility() {
+        if (!this.dialogueContainer || !this.dialogueControls) return;
+
+        this.isDialogueHidden = !this.isDialogueHidden;
+
+        if (this.isDialogueHidden) {
+            // 隐藏对话框
+            this.dialogueContainer.classList.add('hidden');
+            this.dialogueControls.classList.add('dialogue-hidden');
+            this.toggleDialogueBtn.textContent = '👁️‍🗨️'; // 显示对话框图标
+            this.toggleDialogueBtn.title = '显示对话框';
+        } else {
+            // 显示对话框
+            this.dialogueContainer.classList.remove('hidden');
+            this.dialogueControls.classList.remove('dialogue-hidden');
+            this.toggleDialogueBtn.textContent = '👁️'; // 隐藏对话框图标
+            this.toggleDialogueBtn.title = '隐藏对话框';
         }
     }
 
