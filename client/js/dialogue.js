@@ -12,7 +12,7 @@ class DialogueManager {
         this.isDialogueHidden = false;
         
         // API配置
-        this.apiBaseUrl = window.API_BASE_URL;
+        this.apiBaseUrl = 'http://localhost:3000';
         
         this.init();
     }
@@ -425,6 +425,37 @@ class DialogueManager {
     destroy() {
         if (this.particleSystem) {
             this.particleSystem.destroy();
+        }
+    }
+
+    // 加载聊天历史
+    async loadChatHistory() {
+        try {
+            console.log('Attempting to fetch from:', `${this.apiBaseUrl}/chat-history`);
+            const response = await fetch(`${this.apiBaseUrl}/chat-history`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.history && Array.isArray(data.history)) {
+                // 清空当前聊天区域
+                this.chatArea.innerHTML = '';
+                
+                // 显示历史消息
+                data.history.forEach(msg => {
+                    // 根据消息的role判断是否为用户消息
+                    const isUser = msg.role === 'user';
+                    // 移除消息中的"[开拓者对三月七说]："前缀
+                    const content = msg.content.replace('[开拓者对三月七说]：', '');
+                    this.addMessage(content, isUser);
+                });
+            }
+        } catch (error) {
+            console.error('加载聊天历史失败:', error);
+            this.addMessage('加载历史对话时出现了一些问题...', false);
         }
     }
 }
