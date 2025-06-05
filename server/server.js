@@ -60,7 +60,7 @@ function getUserDataDir(userIP) {
 // Helper function to run Python scripts
 function runPythonScript(scriptPath, functionName, args) {
     return new Promise((resolve, reject) => {
-        const pythonProcess = spawn('python', [scriptPath]);
+        const pythonProcess = spawn('/home/webdev/Echoes-of-the-Heart/venv/bin/python3', [scriptPath]);
         let outputData = '';
         let errorData = '';
 

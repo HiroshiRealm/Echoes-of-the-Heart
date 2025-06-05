@@ -93,7 +93,7 @@ def add_memory(memory_content, memory_id):
     
     # 检查记忆是否已经存在
     if any(m['id'] == memory_id for m in prompt_data['memories']):
-        return
+        return False
     
     # 添加新记忆
     prompt_data['memories'].append({
@@ -103,6 +103,7 @@ def add_memory(memory_content, memory_id):
     
     # 保存更新后的数据
     save_prompt_data(prompt_data, prompt_path)
+    return True
 
 def chat_with_march_seven(user_message):
     """

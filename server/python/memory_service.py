@@ -181,9 +181,8 @@ async def check_all_memory_points(current_dialogue):
                 "isTriggered": is_triggered
             })
 
-        for point in results:
-            if point['isTriggered']:
-                add_memory(point['content'], point['id'])
+        # 过滤掉 add_memory 返回 False 的记忆点
+        results = [point for point in results if not point['isTriggered'] or add_memory(point['content'], point['id'])]
         
         # print(f"[DEBUG] 记忆点检查完成，触发数量: {sum(1 for r in results if r['isTriggered'])}", file=sys.stderr)
         return results
