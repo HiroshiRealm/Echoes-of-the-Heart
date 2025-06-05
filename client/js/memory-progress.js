@@ -7,7 +7,7 @@ class MemoryPuzzleManager {
         this.particleSystem = null;
         
         // API配置
-        this.apiBaseUrl = "http://localhost:3000";
+        this.apiBaseUrl = "http://172.26.82.133:3000";
         
         // DOM元素
         this.eventOverlay = null;
