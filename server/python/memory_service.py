@@ -6,6 +6,7 @@ import os
 import time
 import random
 import codecs
+import requests
 from chat_service import add_memory
 
 # 预设记忆点
@@ -66,9 +67,11 @@ PRESET_MEMORY_POINTS = [
     }
 ]
 
-# DeepSeek API 配置
-API_KEY = "sk-efe8817f744e417db101bd37c46fa3c4"
-API_URL = "https://api.deepseek.com/v1/chat/completions"
+# SiliconFlow API 配置
+# 警告：请务必将下面的密钥替换为您自己的 SiliconFlow API 密钥
+# 建议使用环境变量来存储密钥 (例如: os.getenv('SILICONFLOW_API_KEY'))
+SILICONFLOW_API_KEY = "sk-fruyyppsxmhtuszoexldfqlszfosjptgubbpbdkqiaccsinb"
+SILICONFLOW_API_BASE = "https://api.siliconflow.cn/v1/chat/completions"
 
 def get_memory_point_by_id(memory_point_id):
     """根据ID获取记忆点"""
@@ -102,12 +105,12 @@ async def check_memory_point_trigger(memory_point, current_dialogue, chat_histor
 
     # 准备请求数据
     headers = {
-        "Authorization": f"Bearer {API_KEY}",
+        "Authorization": f"Bearer {SILICONFLOW_API_KEY}",
         "Content-Type": "application/json"
     }
     
     data = {
-        "model": "deepseek-chat",
+        "model": "Qwen/QwQ-32B-Preview",
         "messages": [
             {
                 "role": "system",
@@ -126,7 +129,7 @@ async def check_memory_point_trigger(memory_point, current_dialogue, chat_histor
     try:
         # 每次调用都创建新的 session
         async with aiohttp.ClientSession() as session:
-            async with session.post(API_URL, headers=headers, json=data) as response:
+            async with session.post(SILICONFLOW_API_BASE, headers=headers, json=data) as response:
                 response.raise_for_status()
                 result = await response.json()
                 answer = result["choices"][0]["message"]["content"].strip().lower()
@@ -136,6 +139,10 @@ async def check_memory_point_trigger(memory_point, current_dialogue, chat_histor
         print(f"[ERROR] 检查记忆点触发时出错 (ID: {memory_point['id']}): {str(e)}", file=sys.stderr)
         return False
 
+def get_all_memory_points():
+    """获取所有预设记忆点"""
+    return PRESET_MEMORY_POINTS 
+
 async def check_all_memory_points(current_dialogue):
     """
     检查所有记忆点的触发状态
@@ -144,6 +151,17 @@ async def check_all_memory_points(current_dialogue):
     Returns:
         list: 记忆点触发状态列表
     """
+    # all_points = get_all_memory_points()
+    
+    # # 构建一个所有记忆点都未触发的列表
+    # result_points = []
+    # for point in all_points:
+    #     result_points.append({
+    #         "id": point["id"],
+    #         "title": point["title"],
+    #         "content": point["content"],
+    #         "isTriggered": False  # 直接设置为 False
+    #     })
     try:
         print(f"[DEBUG] 开始检查记忆点，当前对话: {current_dialogue}", file=sys.stderr)
         
@@ -190,9 +208,6 @@ async def check_all_memory_points(current_dialogue):
         print(f"[ERROR] 检查记忆点时出错: {str(e)}", file=sys.stderr)
         return []
 
-def get_all_memory_points():
-    """获取所有预设记忆点"""
-    return PRESET_MEMORY_POINTS 
 
 def main():
     try:

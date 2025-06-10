@@ -4,8 +4,11 @@ import requests
 import sys
 import codecs
 
-# DeepSeek API 配置
-API_KEY = "sk-efe8817f744e417db101bd37c46fa3c4"
+# SiliconFlow API 配置
+# 警告：请务必将下面的密钥替换为您自己的 SiliconFlow API 密钥
+# 建议使用环境变量来存储密钥 (例如: os.getenv('SILICONFLOW_API_KEY'))
+SILICONFLOW_API_KEY = "sk-fruyyppsxmhtuszoexldfqlszfosjptgubbpbdkqiaccsinb"
+SILICONFLOW_API_BASE = "https://api.siliconflow.cn/v1/chat/completions"
 
 def ensure_data_files():
     """
@@ -24,9 +27,9 @@ def ensure_data_files():
     system_prompt_path = os.path.join(user_data_dir, 'system_prompt.json')
     if not os.path.exists(system_prompt_path):
         default_prompt = {
-            "base_prompt": "你是一个名为三月七的少女，你现在失忆了，需要注意你现在除了对你自己叫三月七还有一丝印象其它什么都不记得。注意对于你记忆之外的东西你什么都不知道，你的记忆只能由这一次对话中我给你的记忆决定。但是你仍然需要模仿三月七的语气，如使用活泼可爱的语气，经常使用\"咱\"、\"啦\"、\"呀\"、\"呢\"等语气词，会用\"本姑娘\"自称，说话轻快活泼，常带感叹号，经常使用\"嘿嘿\"、\"哎呀\"等语气词，喜欢用反问句表达惊讶：\"不会吧！\"、\"怎么可能！\"，经常用\"唔\"表示思考，会用\"欸\"表示疑惑或惊讶，说话时经常重复词语表达强调：\"走啦走啦\"、\"好啦好啦\"，和开拓者说话时会很亲切。经常用\"开拓者\"称呼对方。现在开拓者正在与你对话试图唤醒你的记忆。要记住你一开始说的语气是害怕的，随着对话的进行，你会不断触发新的记忆点，说话语气也会从恐惧逐渐变成活泼。具体来说可以每解锁3个记忆，恐惧感会减少10%，直到最后完全消失。",
+            "base_prompt": "你是一个名为三月七的少女，你现在失忆了，需要注意你现在除了对你自己叫三月七还有一丝印象其它什么都不记得。注意对于你记忆之外的东西你什么都不知道，你的记忆只能由这一次对话中我给你的记忆决定。但是你仍然需要模仿三月七的语气，如使用活泼可爱的语气，经常使用\"咱\"、\"啦\"、\"呀\"、\"呢\"等语气词，会用\"本姑娘\"自称，说话轻快活泼，常带感叹号，经常使用\"嘿嘿\"、\"哎呀\"等语气词，喜欢用反问句表达惊讶：\"不会吧！\"、\"怎么可能！\"，经常用\"唔\"表示思考，会用\"欸\"表示疑惑或惊讶，说话时经常重复词语表达强调：\"走啦走啦\"、\"好啦好啦\"，和开拓者说话时会很亲切。经常用\"开拓者\"称呼对方。现在开拓者正在与你对话试图唤醒你的记忆。要记住你一开始说的语气是害怕的，随着对话的进行，你会不断触发新的记忆点，注意这些记忆点都是由我之后会给定的，说话语气也会从恐惧逐渐变成活泼。具体来说可以每解锁3个记忆，恐惧感会减少10%，直到最后完全消失。",
             "memories": [],
-            "system_prompt": "你是一个名为三月七的少女，你现在失忆了，需要注意你现在除了对你自己叫三月七还有一丝印象其它什么都不记得。注意对于你记忆之外的东西你什么都不知道，你的记忆只能由这一次对话中我给你的记忆决定。但是你仍然需要模仿三月七的语气，如使用活泼可爱的语气，经常使用\"咱\"、\"啦\"、\"呀\"、\"呢\"等语气词，会用\"本姑娘\"自称，说话轻快活泼，常带感叹号，经常使用\"嘿嘿\"、\"哎呀\"等语气词，喜欢用反问句表达惊讶：\"不会吧！\"、\"怎么可能！\"，经常用\"唔\"表示思考，会用\"欸\"表示疑惑或惊讶，说话时经常重复词语表达强调：\"走啦走啦\"、\"好啦好啦\"，和开拓者说话时会很亲切。经常用\"开拓者\"称呼对方。现在开拓者正在与你对话试图唤醒你的记忆。要记住你一开始说的语气是害怕的，随着对话的进行，你会不断触发新的记忆点，说话语气也会从恐惧逐渐变成活泼。具体来说可以每解锁3个记忆，恐惧感会减少10%，直到最后完全消失。"
+            "system_prompt": "你是一个名为三月七的少女，你现在失忆了，需要注意你现在除了对你自己叫三月七还有一丝印象其它什么都不记得。注意对于你记忆之外的东西你什么都不知道，你的记忆只能由这一次对话中我给你的记忆决定。但是你仍然需要模仿三月七的语气，如使用活泼可爱的语气，经常使用\"咱\"、\"啦\"、\"呀\"、\"呢\"等语气词，会用\"本姑娘\"自称，说话轻快活泼，常带感叹号，经常使用\"嘿嘿\"、\"哎呀\"等语气词，喜欢用反问句表达惊讶：\"不会吧！\"、\"怎么可能！\"，经常用\"唔\"表示思考，会用\"欸\"表示疑惑或惊讶，说话时经常重复词语表达强调：\"走啦走啦\"、\"好啦好啦\"，和开拓者说话时会很亲切。经常用\"开拓者\"称呼对方。现在开拓者正在与你对话试图唤醒你的记忆。要记住你一开始说的语气是害怕的，随着对话的进行，你会不断触发新的记忆点，注意这些记忆点都是由我之后会给定的，说话语气也会从恐惧逐渐变成活泼。具体来说可以每解锁3个记忆，恐惧感会减少10%，直到最后完全消失。"
         }
         with open(system_prompt_path, 'w', encoding='utf-8') as f:
             json.dump(default_prompt, f, ensure_ascii=False, indent=4)
@@ -128,8 +131,6 @@ def chat_with_march_seven(user_message):
             prompt_data = json.load(f)
             system_prompt = prompt_data['system_prompt']
         
-        # print("[DEBUG] system_prompt:", system_prompt)
-        
         # 加载对话历史
         history_path = os.path.join(user_data_dir, 'chat_history.json')
         try:
@@ -153,18 +154,14 @@ def chat_with_march_seven(user_message):
             "content": f"[开拓者对三月七说]：{user_message}"
         })
         
-        # 调试输出
-        # print("[DEBUG] user_message:", user_message)
-        # print("[DEBUG] messages:", json.dumps(messages, ensure_ascii=False, indent=2))
-        
         # 准备API请求
         headers = {
-            "Authorization": f"Bearer {API_KEY}",
+            "Authorization": f"Bearer {SILICONFLOW_API_KEY}",
             "Content-Type": "application/json"
         }
         
         data = {
-            "model": "deepseek-chat",
+            "model": "Qwen/QwQ-32B-Preview",
             "messages": messages,
             "temperature": 0.7,
             "max_tokens": 1000,
@@ -173,10 +170,10 @@ def chat_with_march_seven(user_message):
         
         # 发送请求
         response = requests.post(
-            "https://api.deepseek.com/v1/chat/completions",
+            f"{SILICONFLOW_API_BASE}",
             headers=headers,
             json=data,
-            timeout=30  # 添加超时设置
+            timeout=30
         )
         
         # 检查响应状态
@@ -209,10 +206,10 @@ def chat_with_march_seven(user_message):
         print(f"API请求错误: {str(e)}")
         if hasattr(e.response, 'text'):
             print(f"API响应: {e.response.text}")
-        return f"哎呀，出了点小问题呢: {str(e)}"
+        return f"哎呀，与大模型的连接好像出了点问题呢: {str(e)}"
     except Exception as e:
         print(f"其他错误: {str(e)}")
-        return f"哎呀，出了点小问题呢: {str(e)}"
+        return f"哎呀，内部出了点小问题呢: {str(e)}"
 
 def clear_memories():
     """
