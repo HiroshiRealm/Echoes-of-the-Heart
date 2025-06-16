@@ -24,7 +24,7 @@
     - **Three.js**: 用于构建对话界面的实时、可交互的WebGL粒子背景。
     - **SVG Filters**: 用于实现记忆拼图界面的动态“迷雾”和“水波纹”效果。
 - **后端**:
-  - **API服务**: Python (Flask / FastAPI)
+  - **API服务**: Node.js (Express)
   - **AI集成**: 大语言模型 (LLM) 接口
   - **数据持久化**: JSON文件
 
@@ -74,10 +74,10 @@
 
 ## 🔧 后端服务与结构
 
-后端采用Python构建，作为一个轻量级、职责单一的服务，专注于提供AI能力和管理用户状态。
+后端采用Node.js + Express构建，作为一个轻量级、职责单一的服务，专注于提供AI能力和管理用户状态。
 
 ### 1. **架构**
-- **Web框架**: 使用Flask或FastAPI等轻量级框架来快速搭建API。
+- **Web框架**: 使用Express.js框架来快速搭建RESTful API。
 - **关注点**:
   - **AI代理**: 作为前端和大型语言模型之间的桥梁。
   - **状态管理器**: 负责追踪和持久化用户的记忆解锁进度。
@@ -106,23 +106,26 @@
     cd Echoes-of-the-Heart
     ```
 
-2.  **配置后端**
-    - 安装Python依赖：
-      ```bash
-      cd server/python
-      pip install -r requirements.txt
-      ```
-    - 在后端代码中配置你的AI模型API Key。
+2.  **安装服务器依赖**
+    ```bash
+    cd server
+    npm install
+    ```
 
-3.  **启动服务**
-    - 启动Python后端服务 (默认运行在`3000`端口):
-      ```bash
-      python server/python/app.py 
-      ```
-    - 你可以直接在浏览器中通过`file://`协议打开`client/pages/dialogue.html`，或者使用任何静态文件服务器来托管`client`目录。
+3.  **启动Node.js服务器**
+    ```bash
+    # 在 server 目录下
+    node server.js
+    # 或者使用 npm start
+    npm start
+    ```
+    服务器将在 http://localhost:3000 运行
+
 
 4.  **开始体验**
-    在浏览器中打开前端页面即可开始。
+    在浏览器中打开http://localhost:3000/index.html即可开始。
+
+
 
 ---
 
@@ -149,8 +152,10 @@ Echoes-of-the-Heart/
 │       └── memory-progress.html
 │
 └── server/                     # 后端服务
-    ├── python/                 # Python Flask/FastAPI 应用
-    │   └── app.py
-    └── data/                   # 数据存储
-        └── memories.json
+    ├── server.js               # Node.js Express 应用
+    ├── package.json            # Node.js 依赖配置
+    ├── python/                 # Python 脚本 (可选)
+    ├── data/                   # 数据存储
+    │   └── memories.json
+    └── requirements.txt        # Python 依赖 (可选)
 ``` 
